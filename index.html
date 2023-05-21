@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code Editor</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="code-editor-container">
+      <div class="files">
+        <div class="file js active">
+          main.js <span class="close">&times;</span>
+        </div>
+        <div class="file css">style.css <span class="close">&times;</span></div>
+      </div>
+      <div class="code-wrapper">
+        <div class="line-numbers">
+          <span class="highlighted">1</span>
+        </div>
+        <pre
+          contenteditable="true"
+          name="code input"
+          id="codeinput"
+          title="code"
+          spellcheck="false"
+        ></pre>
+      </div>
+      <div class="code-info">
+        <div class="code-info-item caretPos" title="Tab Indent">
+          Ln 1, Col 21
+        </div>
+        <div class="code-info-item spaces" title="Tab Indent">Spaces: 4</div>
+        <div class="code-info-item encoding" title="Encoding">UTF-8</div>
+        <div class="code-info-item lang" title="Language">JavaScript</div>
+      </div>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>
+
+
+sa
