@@ -86,6 +86,7 @@ body {
   display: flex;
   flex-direction: row;
   padding: var(--code-editor-padding);
+  padding-bottom: 0;
   padding-right: 0;
   gap: 24px;
   background: #212836;
@@ -93,7 +94,7 @@ body {
   max-height: 400px;
   position: relative;
   overflow-y: scroll;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 .code-wrapper .line-numbers {
@@ -138,6 +139,8 @@ textarea#codeinput {
   line-height: 21px;
   z-index: 99;
   /* height: max-content; */
+  word-wrap: unset;
+  overflow-y: hidden;
 }
 
 /* code-info */
@@ -149,6 +152,7 @@ textarea#codeinput {
   padding: 2px 10px;
   justify-content: flex-end;
   gap: 6px;
+  z-index: 99;
 }
 
 .code-info-item {
@@ -165,15 +169,21 @@ textarea#codeinput {
   background: #303c5429;
 }
 
+textarea#codeinput::-webkit-scrollbar {
+  width: 16px;
+  background: transparent;
+}
+
 .code-wrapper::-webkit-scrollbar {
   width: 16px;
   border-left: 1px solid #303c54;
-
   background: transparent;
 }
+textarea#codeinput::-webkit-scrollbar-thumb,
 .code-wrapper::-webkit-scrollbar-thumb {
   background: #5c678278;
 }
+
 .code-wrapper::-webkit-scrollbar-thumb:active,
 .code-wrapper::-webkit-scrollbar-thumb:hover {
   background: #5c6782c5;
@@ -212,11 +222,17 @@ textarea#codeinput {
   height: 100vh;
   max-height: 100vh;
   overflow: hidden;
+  position: static;
 }
 
 .code-editor-container.fullscreen .code-wrapper {
-  height: 100vh;
+  height: calc(100vh - 36px - 30px);
   max-height: 100vh;
+}
+
+.code-editor-container.fullscreen #codeinput {
+  height: auto;
+  max-height: max-content;
 }
 
 .code-editor-container.fullscreen .code-info {
