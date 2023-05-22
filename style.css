@@ -126,7 +126,7 @@ body {
   background: #79a4e31f;
 }
 
-pre#codeinput {
+textarea#codeinput {
   width: 100%;
   background: none;
   border: 0;
