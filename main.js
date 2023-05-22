@@ -67,3 +67,16 @@ function deleteLastLine() {
 
 
 // change highlighted line by arrow up and enter
+
+
+
+// fullscreenToggle
+
+const container = document.querySelector('.code-editor-container')
+const btn = document.querySelector('.fullscreenToggle')
+btn.addEventListener('click', () => {
+    btn.classList.toggle('active')
+    container.classList.toggle('fullscreen')
+    setWidthHighlighter()
+    setHeightTextarea(linesCount)
+})
