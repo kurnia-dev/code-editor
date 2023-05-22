@@ -14,32 +14,28 @@ function setWidthHighlighter() {
 }
 
 setHeightTextarea()
-let linesCount = preCodeInput.childElementCount + 1
 
+let linesCount = preCodeInput.value.split('\n').length
 
 preCodeInput.addEventListener('keydown', (e) => {
     let scrollPos = document.querySelector('.code-wrapper').scrollTop
 
     if (e.key == 'Enter') {
-        if (lineNumbersContainer.childElementCount >= 1) {
-            linesCount++
-            addNewLineNumber(linesCount)
-            setHeightTextarea(linesCount, scrollPos)
-        }
-    } else if (e.key = "Backspace") {
-
-        if (preCodeInput.childElementCount - 1 <= linesCount ) {
-            if (lineNumbersContainer.childElementCount > 1) {
-                setHeightTextarea(linesCount, scrollPos)
-                deleteLastLine(linesCount)
-                linesCount--
-            }
-        }
-        
-    }
-    
+        linesCount++
+        addNewLineNumber(linesCount)
+        setHeightTextarea(linesCount, scrollPos)
+    } 
 })
 
+preCodeInput.addEventListener('input', (e) => {
+    let scrollPos = document.querySelector('.code-wrapper').scrollTop
+
+    if (preCodeInput.value.split('\n').length < linesCount) {
+        linesCount--
+        setHeightTextarea(linesCount, scrollPos)
+        deleteLastLine()
+    } 
+})
 
 
 function setHeightTextarea(linesCount, scrollPos) {
@@ -47,7 +43,7 @@ function setHeightTextarea(linesCount, scrollPos) {
     preCodeInput.style.height = 'max-content'
     let codeWrapperHeight = codeWrapper.offsetHeight
     
-    preCodeInput.style.height = linesHeight + codeWrapperHeight - 53 + 'px'
+    preCodeInput.style.height = linesHeight + codeWrapperHeight - 64 + 'px'
     codeWrapper.scrollTo(0, scrollPos)
 }
 
@@ -62,11 +58,13 @@ function addNewLineNumber(linesCount) {
 }
 
 function deleteLastLine() {
-    lineNumbersContainer.lastElementChild.remove()
+    if (lineNumbersContainer.childElementCount > 1) {
+        lineNumbersContainer.lastElementChild.remove()
+    }
 }
 
 
-// change highlighted line by arrow up and enter
+// todo : change highlighted line by arrow up and enter 
 
 
 
@@ -80,3 +78,8 @@ btn.addEventListener('click', () => {
     setWidthHighlighter()
     setHeightTextarea(linesCount)
 })
+
+function updateLineColInfo(line, col) {
+    let caretPos = document.querySelector('.caretPos')
+    caretPos.innerText = `Ln ${line}, Col ${col}`
+}
