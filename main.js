@@ -34,22 +34,22 @@ preCodeInput.addEventListener('keydown', (e) => {
         linesCount++
         addNewLineNumber(linesCount)
         setHeightTextarea(linesCount, scrollPos)
-    } 
+    }
 
     // todo : change highlighted line by arrow up and enter 
 
     if (e.key == "ArrowDown") {
         try {
             e.target.nextElementSibling.focus();
-        } catch {}
+        } catch { }
     }
     if (e.key == "ArrowUp") {
         try {
             e.target.previousElementSibling.focus();
-        } catch {}
+        } catch { }
     }
 
-    console.log(e);
+    // console.log(e);
     
     if (e.key == "Backspace" && !e.target.innerText) {
         try {
@@ -65,7 +65,8 @@ preCodeInput.addEventListener('keydown', (e) => {
         linesCount--
         setHeightTextarea(linesCount, scrollPos)
         deleteLastLine()
-    } 
+    }
+    
 })
 
 preCodeInput.addEventListener('input', (e) => {
@@ -116,8 +117,9 @@ btn.addEventListener('click', () => {
 })
 
 function updateLineColInfo(line, col) {
+    col = window.getSelection().focusOffset
     let caretPos = document.querySelector('.caretPos')
-    caretPos.innerText = `Ln ${line}, Col ${col}`
+    caretPos.innerText = `Ln ${++line}, Col ${++col}`
 }
 
 
@@ -135,14 +137,67 @@ preCodeInput.addEventListener('pointermove', (e) => {
     if (e.buttons == 1) {
         // console.log(true);
         editableTrue(preCodeInput)
+    } else {
+        editableFalse(preCodeInput)
+    }
+
+})
+// end
+
+// Hightlighting the active line / line with cursor
+
+function getFocusedLine() {
+    let focusEl = document.activeElement
+    let linesArr = Array.from(preCodeInput.children)
+    let lineNumberHasFocus = linesArr.indexOf(focusEl)
+
+    return lineNumberHasFocus
+}
+
+function setLineHightligher() {
+    let lineNumberList = Array.from(lineNumbersContainer.children)
+    lineNumberList.forEach(line => {
+        if (line.classList.contains('highlighted')) {
+            line.classList.remove('highlighted')
+        } 
+    });
+    
+    try {
+        lineNumberList[getFocusedLine()].classList.add('highlighted')
+        setWidthHighlighter()
+    } catch { }
+    
+}
+
+preCodeInput.addEventListener('keydown', (e) => {
+    let key = [8, 13, 35, 36, 37, 38, 39, 40, 46]
+    if (key.includes(e.keyCode)) {
+        setLineHightligher()
     }
 })
 
-Array.from(preCodeInput.children).forEach(code => {
-    code.addEventListener('click', () => {
-        editableFalse(preCodeInput)
-        editableTrue(code)
-    })
-});
+preCodeInput.addEventListener('click', (e) => {
+    if (e.target.localName == 'code'){
+        setLineHightligher() 
+        updateLineColInfo(getFocusedLine(), getCaretColumnPosition())
+    }
+})
 
-// end
+
+//  todo : update line col
+
+// to get Cols / caret position from left
+
+function getCaretColumnPosition() {
+    try {
+        let range = document.createRange()
+        range.setStart(document.activeElement.childNodes[0], 0)
+        range.setEnd(document.activeElement.childNodes[0], window.getSelection().focusOffset)
+        
+        return range.toString().length // col
+    }catch{}
+}
+
+preCodeInput.addEventListener('keyup', () => {
+        updateLineColInfo(getFocusedLine(), getCaretColumnPosition())
+})
