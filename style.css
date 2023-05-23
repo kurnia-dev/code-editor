@@ -85,27 +85,32 @@ body {
 .code-wrapper {
   display: flex;
   flex-direction: row;
-  padding: var(--code-editor-padding);
-  padding-bottom: 0;
-  padding-right: 0;
-  gap: 24px;
+  padding-top: var(--code-editor-padding);
+  /* padding-bottom: 0;
+  padding-right: 0; */
+  /* gap: 24px; */
   background: #212836;
   height: 400px;
   max-height: 400px;
   position: relative;
-  overflow-y: scroll;
-  overflow-x: hidden;
+  overflow: scroll;
 }
 
 .code-wrapper .line-numbers {
-  max-width: 25px;
+  width: max-content;
+  background: #212836;
+  position: sticky;
+  left: 0;
+  z-index: 999;
+  height: max-content;
 }
 
 .code-wrapper .line-numbers span {
   font-family: monospace;
-  display: inline-block;
+  display: block;
   text-align: right;
-  width: 25px;
+  min-width: 60px;
+  padding: 0 16px;
   font-size: 16px;
   line-height: 21px;
   color: rgb(48, 60, 84);
@@ -115,7 +120,7 @@ body {
   color: #8292a9;
 }
 
-.code-wrapper .line-numbers span.highlighted::after {
+/* .code-wrapper .line-numbers span.highlighted::after {
   content: "";
   display: inline;
   position: absolute;
@@ -125,10 +130,12 @@ body {
   z-index: 0;
   background: #8292a9;
   background: #79a4e31f;
-}
+} */
 
 #codeinput {
-  width: 100%;
+  width: max-content;
+  flex-shrink: 0;
+  flex-grow: 1;
   background: none;
   border: 0;
   resize: none;
@@ -137,10 +144,10 @@ body {
   color: rgba(255, 255, 255, 0.8);
   font-size: 16px;
   line-height: 21px;
-  z-index: 99;
   /* height: max-content; */
   word-wrap: unset;
-  overflow-y: hidden;
+  overflow: hidden;
+  display: block;
 }
 
 #codeinput code {
@@ -149,13 +156,19 @@ body {
   border: none;
   background: none;
   display: block;
-  width: 100%;
+  min-width: 100%;
+  width: max-content;
   margin: 0;
   line-height: 21px;
   color: inherit;
   font-family: inherit;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
+#codeinput code.highlighted {
+  background: #79a4e31f;
+}
 /* code-info */
 
 .code-info {
