@@ -116,8 +116,8 @@ btn.addEventListener('click', () => {
     setHeightTextarea(linesCount)
 })
 
-function updateLineColInfo(line, col) {
-    col = window.getSelection().focusOffset
+function updateLineColInfo(line) {
+    let col = window.getSelection().focusOffset
     let caretPos = document.querySelector('.caretPos')
     caretPos.innerText = `Ln ${++line}, Col ${++col}`
 }
@@ -179,25 +179,10 @@ preCodeInput.addEventListener('keydown', (e) => {
 preCodeInput.addEventListener('click', (e) => {
     if (e.target.localName == 'code'){
         setLineHightligher() 
-        updateLineColInfo(getFocusedLine(), getCaretColumnPosition())
+        updateLineColInfo(getFocusedLine())
     }
 })
 
-
-//  todo : update line col
-
-// to get Cols / caret position from left
-
-function getCaretColumnPosition() {
-    try {
-        let range = document.createRange()
-        range.setStart(document.activeElement.childNodes[0], 0)
-        range.setEnd(document.activeElement.childNodes[0], window.getSelection().focusOffset)
-        
-        return range.toString().length // col
-    }catch{}
-}
-
 preCodeInput.addEventListener('keyup', () => {
-        updateLineColInfo(getFocusedLine(), getCaretColumnPosition())
+        updateLineColInfo(getFocusedLine())
 })
