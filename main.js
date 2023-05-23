@@ -24,6 +24,7 @@ preCodeInput.addEventListener('keydown', (e) => {
     let scrollPos = document.querySelector('.code-wrapper').scrollTop
 
     if (e.key == 'Enter') {
+        e.preventDefault()
         let newCode = document.createElement('code')
         newCode.setAttribute('contenteditable', true)
         newCode.tabIndex = 0
