@@ -1,24 +1,8 @@
 const preCodeInput = document.querySelector('#codeinput')
 const codeWrapper = document.querySelector('.code-wrapper')
-
-window.onload = setWidthHighlighter()
-window.addEventListener('resize', ()=> setWidthHighlighter())
-
-function setWidthHighlighter() {
-    let preCodeInputWidth = preCodeInput.offsetWidth
-    let lineHighlighter = document.querySelector('.line-numbers span.highlighted')
-    let _after = window.getComputedStyle(lineHighlighter, "::after")
-
-    lineHighlighter.style.setProperty('--width', 'auto')
-    lineHighlighter.style.setProperty('--width', preCodeInputWidth + 'px' )
-}
-
-setHeightTextarea()
-
 let linesCount = preCodeInput.childElementCount
 
-
-
+setHeightCodeInput()
 
 preCodeInput.addEventListener('keydown', (e) => {
     let scrollPos = document.querySelector('.code-wrapper').scrollTop
@@ -33,10 +17,8 @@ preCodeInput.addEventListener('keydown', (e) => {
         e.target.nextElementSibling.focus()
         linesCount++
         addNewLineNumber(linesCount)
-        setHeightTextarea(linesCount, scrollPos)
+        setHeightCodeInput(linesCount, scrollPos)
     }
-
-    // todo : change highlighted line by arrow up and enter 
 
     if (e.key == "ArrowDown") {
         try {
@@ -49,8 +31,6 @@ preCodeInput.addEventListener('keydown', (e) => {
         } catch { }
     }
 
-    // console.log(e);
-    
     if (e.key == "Backspace" && !e.target.innerText) {
         try {
             e.target.previousElementSibling.focus()
@@ -63,7 +43,7 @@ preCodeInput.addEventListener('keydown', (e) => {
 
     if (preCodeInput.childElementCount < linesCount) {
         linesCount--
-        setHeightTextarea(linesCount, scrollPos)
+        setHeightCodeInput(linesCount, scrollPos)
         deleteLastLine()
     }
     
@@ -75,7 +55,7 @@ preCodeInput.addEventListener('input', (e) => {
 })
 
 
-function setHeightTextarea(linesCount, scrollPos) {
+function setHeightCodeInput(linesCount, scrollPos) {
     let linesHeight = linesCount * 21 // 21 is lineheight (in 'px') declared in css 
     preCodeInput.style.height = 'max-content'
     let codeWrapperHeight = codeWrapper.offsetHeight
@@ -101,10 +81,6 @@ function deleteLastLine() {
 }
 
 
-
-
-
-
 // fullscreenToggle
 
 const container = document.querySelector('.code-editor-container')
@@ -112,8 +88,7 @@ const btn = document.querySelector('.fullscreenToggle')
 btn.addEventListener('click', () => {
     btn.classList.toggle('active')
     container.classList.toggle('fullscreen')
-    setWidthHighlighter()
-    setHeightTextarea(linesCount)
+    setHeightCodeInput(linesCount)
 })
 
 function updateLineColInfo(line) {
@@ -156,15 +131,23 @@ function getFocusedLine() {
 
 function setLineHightligher() {
     let lineNumberList = Array.from(lineNumbersContainer.children)
+    let lineCodeList = Array.from(preCodeInput.children)
+
     lineNumberList.forEach(line => {
         if (line.classList.contains('highlighted')) {
             line.classList.remove('highlighted')
         } 
     });
+
+    lineCodeList.forEach(code => {
+        if (code.classList.contains('highlighted')) {
+            code.classList.remove('highlighted')
+        } 
+    });
     
     try {
         lineNumberList[getFocusedLine()].classList.add('highlighted')
-        setWidthHighlighter()
+        lineCodeList[getFocusedLine()].classList.add('highlighted')
     } catch { }
     
 }
@@ -186,3 +169,22 @@ preCodeInput.addEventListener('click', (e) => {
 preCodeInput.addEventListener('keyup', () => {
         updateLineColInfo(getFocusedLine())
 })
+
+
+
+// ==========================================================================//
+//                              Unecesarry Code                              //
+// ==========================================================================//
+
+
+// window.onload = setWidthHighlighter()
+// window.addEventListener('resize', ()=> setWidthHighlighter())
+
+// function setWidthHighlighter() {
+//     let preCodeInputWidth = preCodeInput.offsetWidth
+//     let lineHighlighter = document.querySelector('.line-numbers span.highlighted')
+//     let _after = window.getComputedStyle(lineHighlighter, "::after")
+
+//     lineHighlighter.style.setProperty('--width', 'auto')
+//     lineHighlighter.style.setProperty('--width', preCodeInputWidth + 'px' )
+// }
