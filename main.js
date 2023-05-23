@@ -15,7 +15,7 @@ function setWidthHighlighter() {
 
 setHeightTextarea()
 
-let linesCount = preCodeInput.innerText.split('\n').length
+let linesCount = preCodeInput.childElementCount
 
 
 
@@ -48,15 +48,29 @@ preCodeInput.addEventListener('keydown', (e) => {
             e.target.previousElementSibling.focus();
         } catch {}
     }
-})
 
-preCodeInput.addEventListener('input', (e) => {
-    let scrollPos = document.querySelector('.code-wrapper').scrollTop
-    if (preCodeInput.innerText.split('\n').length < linesCount) {
+    console.log(e);
+    
+    if (e.key == "Backspace" && !e.target.innerText) {
+        try {
+            e.target.previousElementSibling.focus()
+        } catch { }
+        
+        if (e.target.previousElementSibling) {
+            e.target.remove()
+        }
+    }
+
+    if (preCodeInput.childElementCount < linesCount) {
         linesCount--
         setHeightTextarea(linesCount, scrollPos)
         deleteLastLine()
     } 
+})
+
+preCodeInput.addEventListener('input', (e) => {
+    let scrollPos = document.querySelector('.code-wrapper').scrollTop
+    
 })
 
 
