@@ -127,7 +127,7 @@ body {
   background: #79a4e31f;
 }
 
-textarea#codeinput {
+#codeinput {
   width: 100%;
   background: none;
   border: 0;
@@ -141,6 +141,19 @@ textarea#codeinput {
   /* height: max-content; */
   word-wrap: unset;
   overflow-y: hidden;
+}
+
+#codeinput code {
+  cursor: text;
+  outline: none;
+  border: none;
+  background: none;
+  display: block;
+  width: 100%;
+  margin: 0;
+  line-height: 21px;
+  color: inherit;
+  font-family: inherit;
 }
 
 /* code-info */
@@ -169,7 +182,7 @@ textarea#codeinput {
   background: #303c5429;
 }
 
-textarea#codeinput::-webkit-scrollbar {
+#codeinput::-webkit-scrollbar {
   width: 16px;
   background: transparent;
 }
@@ -179,7 +192,7 @@ textarea#codeinput::-webkit-scrollbar {
   border-left: 1px solid #303c54;
   background: transparent;
 }
-textarea#codeinput::-webkit-scrollbar-thumb,
+#codeinput::-webkit-scrollbar-thumb,
 .code-wrapper::-webkit-scrollbar-thumb {
   background: #5c678278;
 }
