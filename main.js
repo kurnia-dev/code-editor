@@ -15,22 +15,43 @@ function setWidthHighlighter() {
 
 setHeightTextarea()
 
-let linesCount = preCodeInput.value.split('\n').length
+let linesCount = preCodeInput.innerText.split('\n').length
+
+
+
 
 preCodeInput.addEventListener('keydown', (e) => {
     let scrollPos = document.querySelector('.code-wrapper').scrollTop
 
     if (e.key == 'Enter') {
+        let newCode = document.createElement('code')
+        newCode.setAttribute('contenteditable', true)
+        newCode.tabIndex = 0
+        newCode.innerText = ''
+        e.target.after(newCode)
+        e.target.nextElementSibling.focus()
         linesCount++
         addNewLineNumber(linesCount)
         setHeightTextarea(linesCount, scrollPos)
     } 
+
+    // todo : change highlighted line by arrow up and enter 
+
+    if (e.key == "ArrowDown") {
+        try {
+            e.target.nextElementSibling.focus();
+        } catch {}
+    }
+    if (e.key == "ArrowUp") {
+        try {
+            e.target.previousElementSibling.focus();
+        } catch {}
+    }
 })
 
 preCodeInput.addEventListener('input', (e) => {
     let scrollPos = document.querySelector('.code-wrapper').scrollTop
-
-    if (preCodeInput.value.split('\n').length < linesCount) {
+    if (preCodeInput.innerText.split('\n').length < linesCount) {
         linesCount--
         setHeightTextarea(linesCount, scrollPos)
         deleteLastLine()
@@ -64,7 +85,7 @@ function deleteLastLine() {
 }
 
 
-// todo : change highlighted line by arrow up and enter 
+
 
 
 
@@ -83,3 +104,30 @@ function updateLineColInfo(line, col) {
     let caretPos = document.querySelector('.caretPos')
     caretPos.innerText = `Ln ${line}, Col ${col}`
 }
+
+
+
+// to select code 
+function editableTrue(el) {
+    el.setAttribute('contenteditable', true)
+}
+
+function editableFalse(el) {
+    el.setAttribute('contenteditable', false)
+}
+
+preCodeInput.addEventListener('pointermove', (e) => {
+    if (e.buttons == 1) {
+        // console.log(true);
+        editableTrue(preCodeInput)
+    }
+})
+
+Array.from(preCodeInput.children).forEach(code => {
+    code.addEventListener('click', () => {
+        editableFalse(preCodeInput)
+        editableTrue(code)
+    })
+});
+
+// end
