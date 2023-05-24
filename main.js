@@ -413,6 +413,31 @@ maximizeBtn.addEventListener('click', () => {
     // coz, i was lazy to add new stylesheet
 })
 
+// button close console and display open console
+const closeConsoleBtn = document.querySelector('.close-console')
+closeConsoleBtn.setAttribute('title', "Close Console") 
+let codeInfo = document.querySelector('.code-info')
+
+let openConsoleBtn = document.createElement('div')
+    openConsoleBtn.classList.add('code-info-item')
+    openConsoleBtn.title = "Open Console (Alt + C)"
+    openConsoleBtn.innerHTML = "<u>C</u>onsole"
+    openConsoleBtn.style.opacity = 0
+    codeInfo.prepend(openConsoleBtn)
+    
+
+closeConsoleBtn.addEventListener('click', () => {
+    openConsoleBtn = document.querySelector('.code-info-item')
+    oldHeight = consoleWrapper.offsetHeight
+    consoleWrapper.style.height = 0 + 'px'
+    openConsoleBtn.style.opacity = 1
+})
+
+openConsoleBtn.addEventListener('click', () => {
+    openConsoleBtn.style.opacity = 0
+    consoleWrapper.style.height = oldHeight + 'px'    
+})
+
 // End of console script
 
 
