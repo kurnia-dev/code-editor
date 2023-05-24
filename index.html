@@ -16,14 +16,50 @@
         </div>
         <div class="file css">style.css <span class="close">&times;</span></div>
       </div>
-      <div class="code-wrapper">
-        <div class="line-numbers">
-          <span class="highlighted">1</span>
+      <div class="main-wrapper">
+        <div class="code-wrapper">
+          <div class="line-numbers">
+            <span class="highlighted">1</span>
+          </div>
+          <div name="code input" id="codeinput" title="code" spellcheck="false">
+            <code
+              contenteditable="true"
+              tabindex="0"
+              class="highlighted"
+            ></code>
+          </div>
         </div>
-        <div name="code input" id="codeinput" title="code" spellcheck="false">
-          <code contenteditable="true" tabindex="0" class="highlighted"></code>
+
+        <!-- Console ==> https://github.com/kurnia-dev/javascript-console/ -->
+
+        <div class="console-wrapper">
+          <div class="resizer"></div>
+          <div class="menu-bar">
+            <span class="title">Console</span>
+            <div class="menu-bar-buttons">
+              <span class="maximize"></span>
+              <span class="close-console"></span>
+            </div>
+          </div>
+          <div class="console-history">
+            <div class="console-input">console.log("Message: " + message)</div>
+            <div class="console-output">
+              Message: Type `info` to show instruction!
+            </div>
+          </div>
+          <div class="input-wrapper">
+            <textarea
+              spellcheck="false"
+              type="text"
+              class="console-input"
+              title="console input"
+              rows="1"
+              id="console-input"
+            ></textarea>
+          </div>
         </div>
       </div>
+
       <div class="code-info">
         <div class="code-info-item caretPos" title="Tab Indent">
           Ln 1, Col 1
