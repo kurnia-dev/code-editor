@@ -265,8 +265,9 @@ textarea.addEventListener('keydown', (e) => {
             let height = consoleWrapper.offsetHeight // get the height of the wrapper
             consoleWrapper.scrollTo(0, (scrollHeight - height)) // to scroll down
 
-
-            saveHistory(code) // save the history to sessionStorage
+            // save the history to sessionStorage
+            if (code != 'clear()') saveHistory(code) // prevent clear() saved to  history
+            // if clear() saved, it will be executed every time, and console-history will always removed
         }
 
         logIndex = logHistory.length // to reset the logIndex if Enter pressed
