@@ -390,17 +390,17 @@ const maximizeBtn = document.querySelector('.maximize')
 maximizeBtn.setAttribute('title', "Maximize Console Height") 
 consoleWrapper.style.transition = 'all 0.2s'
 maximizeBtn.style.transition = 'all 0.2s'
-let oldHeight // it will store old height to be restored if user click again on maximizebtn
+let heightBeforeMaximized // it will store old height to be restored if user click again on maximizebtn
 
 maximizeBtn.addEventListener('click', () => {
     let mainWrapperHeight = document.querySelector('.main-wrapper').offsetHeight
 
     if (maximizeBtn.classList.contains('true')) {
-        consoleWrapper.style.height = oldHeight + 'px'
+        consoleWrapper.style.height = heightBeforeMaximized + 'px'
         maximizeBtn.setAttribute('title', "Maximize Console Height")
         maximizeBtn.style.transform = "rotate(0)"
     } else {
-        oldHeight = consoleWrapper.offsetHeight
+        heightBeforeMaximized = consoleWrapper.offsetHeight
         consoleWrapper.style.maxHeight = mainWrapperHeight - 16 + 'px'
         consoleWrapper.style.height = mainWrapperHeight - 16 + 'px'
         maximizeBtn.setAttribute('title', "Restore Console Height")
@@ -418,25 +418,37 @@ maximizeBtn.addEventListener('click', () => {
 const closeConsoleBtn = document.querySelector('.close-console')
 closeConsoleBtn.setAttribute('title', "Close Console") 
 let codeInfo = document.querySelector('.code-info')
+let heightBeforeClosed
 
 let openConsoleBtn = document.createElement('div')
-    openConsoleBtn.classList.add('code-info-item')
+    openConsoleBtn.classList.add('code-info-item', 'open-console-btn')
     openConsoleBtn.title = "Open Console (Alt + C)"
     openConsoleBtn.innerHTML = "<u>C</u>onsole"
     openConsoleBtn.style.opacity = 0
     codeInfo.prepend(openConsoleBtn)
     
-
 closeConsoleBtn.addEventListener('click', () => {
-    openConsoleBtn = document.querySelector('.code-info-item')
-    oldHeight = consoleWrapper.offsetHeight
+    openConsoleBtn = document.querySelector('.open-console-btn')
+    heightBeforeClosed = consoleWrapper.offsetHeight
     consoleWrapper.style.height = 0 + 'px'
     openConsoleBtn.style.opacity = 1
 })
 
-openConsoleBtn.addEventListener('click', () => {
+let openConsole = () => {
     openConsoleBtn.style.opacity = 0
-    consoleWrapper.style.height = oldHeight + 'px'    
+    consoleWrapper.style.height = heightBeforeClosed + 'px'   
+}
+
+openConsoleBtn.addEventListener('click', openConsole)
+
+
+// Open Shortcut (Alt + C)
+document.body.addEventListener('keydown', e => {
+    if (openConsoleBtn.style.opacity == 1) {
+        // only executed if openConsoleBtn is visible 
+        // to prevent error on maximizeBtn click event
+        if (e.altKey && e.key == 'c') openConsole()
+    }
 })
 
 // End of console script
