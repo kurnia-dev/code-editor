@@ -385,15 +385,47 @@ resizer.addEventListener('pointerdown', () => {
 })
 
 
-// maximize and close console
+// maximize and restore heigt of console
 const maximizeBtn = document.querySelector('.maximize')
+maximizeBtn.setAttribute('title', "Maximize Console Height") 
+consoleWrapper.style.transition = 'all 0.2s'
+maximizeBtn.style.transition = 'all 0.2s'
+let oldHeight // it will store old height to be restored if user click again on maximizebtn
 
-maximizeBtn.addEventListener('click',  ()=>{})
+maximizeBtn.addEventListener('click', () => {
+    let mainWrapperHeight = document.querySelector('.main-wrapper').offsetHeight
 
+    if (maximizeBtn.classList.contains('true')) {
+        consoleWrapper.style.height = oldHeight + 'px'
+        maximizeBtn.setAttribute('title', "Maximize Console Height")
+        maximizeBtn.style.transform = "rotate(0)"
+    } else {
+        oldHeight = consoleWrapper.offsetHeight
+        consoleWrapper.style.height = mainWrapperHeight - 16 + 'px'
+        maximizeBtn.setAttribute('title', "Restore Console Height")
+        maximizeBtn.style.transform = "rotate(180deg)"
+    }
 
-// todo : fix scroll code input on enter 
+    maximizeBtn.classList.toggle('true')
+    // Note : 
+    // this callback will change style element without add any class on CSS-- 
+    // direcly from JS
+    // coz, i was lazy to add new stylesheet
+})
 
 // End of console script
+
+
+
+
+// ============================ To do list ================================= //
+// todo : fix scroll code input on enter
+
+// ======================== End of To do list ============================== //
+
+
+
+
 
 // ==========================================================================//
 //                              Unecesarry Code                              //
