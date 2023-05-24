@@ -1,11 +1,14 @@
+const container = document.querySelector('.code-editor-container')
 const preCodeInput = document.querySelector('#codeinput')
 const codeWrapper = document.querySelector('.code-wrapper')
+const consoleWrapper = document.querySelector('.console-wrapper')
+const textarea = document.querySelector('#console-input')
+const lineNumbersContainer = document.querySelector('.line-numbers')
 let linesCount = preCodeInput.childElementCount
 
 setHeightCodeInput()
 
 preCodeInput.addEventListener('keydown', (e) => {
-    let scrollPos = document.querySelector('.code-wrapper').scrollTop
 
     if (e.key == 'Enter') {
         e.preventDefault()
@@ -17,7 +20,7 @@ preCodeInput.addEventListener('keydown', (e) => {
         e.target.nextElementSibling.focus()
         linesCount++
         addNewLineNumber(linesCount)
-        setHeightCodeInput(linesCount, scrollPos)
+        setHeightCodeInput(linesCount)
     }
 
     if (e.key == "ArrowDown") {
@@ -43,30 +46,27 @@ preCodeInput.addEventListener('keydown', (e) => {
 
     if (preCodeInput.childElementCount < linesCount) {
         linesCount--
-        setHeightCodeInput(linesCount, scrollPos)
+        setHeightCodeInput(linesCount)
         deleteLastLine()
     }
     
 })
 
-preCodeInput.addEventListener('input', (e) => {
-    let scrollPos = document.querySelector('.code-wrapper').scrollTop
-    
-})
-
-
-function setHeightCodeInput(linesCount, scrollPos) {
+function setHeightCodeInput(linesCount) {
+    let scrollPos = document.querySelector('.code-wrapper').scrollTop 
     let linesHeight = linesCount * 21 // 21 is lineheight (in 'px') declared in css 
     preCodeInput.style.height = 'max-content'
     let codeWrapperHeight = codeWrapper.offsetHeight
     
     preCodeInput.style.height = linesHeight + codeWrapperHeight - 64 + 'px'
-    codeWrapper.scrollTo(0, scrollPos)
+    
+    linesHeight < codeWrapperHeight ?
+        codeWrapper.scrollTo(0, scrollPos) :
+        codeWrapper.scrollBy(0, 21) // to add some space between the line adn console
 }
 
 
 
-const lineNumbersContainer = document.querySelector('.line-numbers')
 function addNewLineNumber(linesCount) {
     let newNumber = document.createElement('span')
     newNumber.innerText = linesCount
@@ -83,7 +83,6 @@ function deleteLastLine() {
 
 // fullscreenToggle
 
-const container = document.querySelector('.code-editor-container')
 const btn = document.querySelector('.fullscreenToggle')
 btn.addEventListener('click', () => {
     btn.classList.toggle('active')
@@ -172,9 +171,6 @@ preCodeInput.addEventListener('keyup', () => {
 
 
 // Console Script --> https://github.com/kurnia-dev/javascript-console/
-
-const consoleWrapper = document.querySelector('.console-wrapper')
-const textarea = document.querySelector('#console-input')
 
 // auto resize textarea 
 window.onload = resize() // to maintain the height, becase the textarea value not lost after page load
@@ -457,7 +453,8 @@ document.body.addEventListener('keydown', e => {
 
 
 // ============================ To do list ================================= //
-// todo : fix scroll code input on enter
+// todo : paste code : separating line, remove text formater
+// todo : highlighter
 
 // ======================== End of To do list ============================== //
 
