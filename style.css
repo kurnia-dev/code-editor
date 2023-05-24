@@ -262,6 +262,11 @@ span.close-console:hover {
   position: static;
 }
 
+.code-editor-container.fullscreen .input-wrapper {
+  display: flex;
+  margin-bottom: 40px;
+}
+
 /* .code-editor-container.fullscreen .code-wrapper {
   height: calc(100vh - 36px - 30px);
   max-height: 100vh;
