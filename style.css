@@ -22,7 +22,7 @@ body {
   background: #1c212c;
   max-width: 1024px;
   margin: 30px;
-  max-height: 400px;
+  /* max-height: 400px; */
   position: relative;
   /* border-radius: 8px; */
 }
@@ -82,6 +82,13 @@ body {
   background: #303c54;
 }
 
+.main-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+  max-height: 600px;
+}
+
 .code-wrapper {
   display: flex;
   flex-direction: row;
@@ -90,10 +97,9 @@ body {
   padding-right: 0; */
   /* gap: 24px; */
   background: #212836;
-  height: 400px;
-  max-height: 400px;
   position: relative;
   overflow: scroll;
+  flex-grow: 1;
 }
 
 .code-wrapper .line-numbers {
@@ -179,6 +185,9 @@ body {
   justify-content: flex-end;
   gap: 6px;
   z-index: 99;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
 }
 
 .code-info-item {
@@ -234,7 +243,9 @@ body {
   cursor: pointer;
 }
 
-.fullscreenToggle:hover {
+.fullscreenToggle:hover,
+span.maximize:hover,
+span.close-console:hover {
   outline: 1px solid #ffffff13;
 }
 
@@ -251,18 +262,197 @@ body {
   position: static;
 }
 
-.code-editor-container.fullscreen .code-wrapper {
+/* .code-editor-container.fullscreen .code-wrapper {
   height: calc(100vh - 36px - 30px);
+  max-height: 100vh;
+} */
+
+/* .code-editor-container.fullscreen #codeinput {
+  height: auto;
+  max-height: max-content;
+} */
+
+.code-editor-container.fullscreen .main-wrapper {
+  height: 100vh;
   max-height: 100vh;
 }
 
-.code-editor-container.fullscreen #codeinput {
-  height: auto;
-  max-height: max-content;
+.code-editor-container.fullscreen .console-wrapper {
+  min-height: 68px;
 }
 
-.code-editor-container.fullscreen .code-info {
-  position: absolute;
+/* Console style --> https://github.com/kurnia-dev/javascript-console/ */
+
+.resizer {
+  position: sticky;
+  top: 0;
+  background: #1c212c;
+  height: 3px;
+  cursor: ns-resize;
+}
+
+.resizer:hover,
+.resizer:active {
+  background: #303c54;
+}
+.menu-bar {
+  -webkit-user-select: none;
+  user-select: none;
+  padding: 6px 0 16px;
+  margin: 0 16px;
+  display: flex;
+  justify-content: space-between;
+  position: sticky;
+  top: 3px; /* from resizer height */
+  background: #1c212c;
+}
+
+.menu-bar .title {
+  cursor: pointer;
+  display: block;
+  padding: 4px 2px;
+  width: max-content;
+  text-transform: uppercase;
+  border-bottom: 1px solid #ffe198;
+}
+
+.menu-bar-buttons {
+  cursor: pointer;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.menu-bar-buttons span {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.menu-bar-buttons span.maximize {
+  background: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" viewBox="0 0 48 48"%3E%3Cpath fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="m13 30l12-12l12 12"%2F%3E%3C%2Fsvg%3E');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.menu-bar-buttons span.close-console {
+  background: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="14" height="14" viewBox="0 0 24 24"%3E%3Cpath fill="white" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41z"%2F%3E%3C%2Fsvg%3E');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.console-output .info {
+  flex-direction: column;
+}
+
+.info ul {
+  list-style: circle;
+  margin: 20px 0 0 80px;
+}
+
+.info li {
+  padding: 6px 0;
+}
+
+.console-wrapper {
+  background: #1c212c;
+  color: white;
+  border: 1px solid #fff2ff1b;
+  border-radius: 2px;
+  /* height: 300px; */
+  overflow-y: auto;
+  font-size: 1.4em;
+  font-family: monospace;
+  padding: 0;
+  /* work on firefox */
+  scrollbar-width: none;
+  /* position: absolute;
   width: 100%;
-  bottom: 0;
+  
+  z-index: 999; */
+  height: 300px;
+  max-height: 560px;
+  /* min-height: 47px; */
+  padding-bottom: 30px;
+  flex-shrink: 0;
+}
+
+::-webkit-scrollbar {
+  /* work on chrome and edge */
+  width: 0;
+}
+
+textarea.console-input {
+  background: none;
+  outline: none;
+  color: inherit;
+  box-sizing: border-box;
+  caret-color: #fff2ff68;
+  width: 100%;
+  resize: none;
+  overflow: hidden;
+  margin: 0;
+  font-size: inherit;
+  border: none;
+}
+
+.input-wrapper,
+.console-history > * {
+  padding: 8px 16px;
+  border-bottom: 1px solid #fff2ff0a;
+  display: flex;
+  gap: 6px;
+}
+
+.console-history > *::before,
+.input-wrapper::before {
+  letter-spacing: -4px;
+  font-weight: bold;
+  width: 1em;
+  flex-shrink: 0; /* to maintain the width from shrinking */
+}
+
+.console-history .console-input,
+textarea.console-input {
+  color: #fcaeff;
+}
+
+.console-history .console-input::before,
+.input-wrapper::before {
+  content: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" viewBox="0 0 256 256"%3E%3Cpath fill="%23e867ec" d="m184.49 136.49l-80 80a12 12 0 0 1-17-17L159 128L87.51 56.49a12 12 0 1 1 17-17l80 80a12 12 0 0 1-.02 17Z"%2F%3E%3C%2Fsvg%3E');
+  color: #e867ec;
+}
+
+.console-history .console-output::before {
+  content: "<-  ";
+  content: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg"  viewBox="0 0 24 24"%3E%3Cg fill="none" stroke="%23ffe198" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"%3E%3Cpath d="m13 19l-6-7l6-7"%2F%3E%3Cpath d="m17 19l-6-7l6-7" opacity=".5"%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E');
+  color: #ffe198;
+}
+
+.input-wrapper {
+  display: flex;
+}
+
+.console-output.error {
+  color: #ff3b3b;
+}
+
+.console-output.error::before {
+  content: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg"  viewBox="0 0 36 36"%3E%3Cpath fill="%23ff7272" d="M18 6a12 12 0 1 0 12 12A12 12 0 0 0 18 6Zm-1.49 6a1.49 1.49 0 0 1 3 0v6.89a1.49 1.49 0 1 1-3 0ZM18 25.5a1.72 1.72 0 1 1 1.72-1.72A1.72 1.72 0 0 1 18 25.5Z" class="clr-i-solid clr-i-solid-path-1"%2F%3E%3Cpath fill="none" d="M0 0h36v36H0z"%2F%3E%3C%2Fsvg%3E');
+}
+
+.console-output.undefined {
+  color: #d0d0d0ab;
+}
+
+@media screen and (max-width: 580px) {
+  .console-wrapper {
+    font-size: 1.2em;
+  }
+}
+@media screen and (max-width: 380px) {
+  .console-wrapper {
+    font-size: 1em;
+  }
 }
