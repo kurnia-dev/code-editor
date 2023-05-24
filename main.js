@@ -401,6 +401,7 @@ maximizeBtn.addEventListener('click', () => {
         maximizeBtn.style.transform = "rotate(0)"
     } else {
         oldHeight = consoleWrapper.offsetHeight
+        consoleWrapper.style.maxHeight = mainWrapperHeight - 16 + 'px'
         consoleWrapper.style.height = mainWrapperHeight - 16 + 'px'
         maximizeBtn.setAttribute('title', "Restore Console Height")
         maximizeBtn.style.transform = "rotate(180deg)"
