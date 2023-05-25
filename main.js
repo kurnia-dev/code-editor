@@ -8,19 +8,28 @@ let linesCount = preCodeInput.childElementCount
 
 setHeightCodeInput()
 
+function createNewLineCode(e, text) {
+    let newCode = document.createElement('code')
+        editableTrue(newCode)
+        newCode.tabIndex = 0
+        newCode.innerHTML = text ?? ''
+        if (text == null){
+            e.target.after(newCode)
+            e.target.nextElementSibling.focus()
+        } else {
+            e.target.parentElement.append(newCode)
+        }
+        
+        linesCount++
+        addNewLineNumber(linesCount)
+        setHeightCodeInput(linesCount)
+}
+
 preCodeInput.addEventListener('keydown', (e) => {
 
     if (e.key == 'Enter') {
         e.preventDefault()
-        let newCode = document.createElement('code')
-        newCode.setAttribute('contenteditable', true)
-        newCode.tabIndex = 0
-        newCode.innerText = ''
-        e.target.after(newCode)
-        e.target.nextElementSibling.focus()
-        linesCount++
-        addNewLineNumber(linesCount)
-        setHeightCodeInput(linesCount)
+        createNewLineCode(e)
     }
 
     if (e.key == "ArrowDown") {
@@ -507,8 +516,43 @@ function createCopySelection(e) {
 }
 
 
+// paste text into multi line and remove text formater :
+
+// by default, if user paste text, the text format will be pasted
+// it must be prevented
+
+// if user copy multi line and paste it, it will just be one line
+// it must be separated by spliting into array, 
+// and create a new line for each array
+
+codeWrapper.addEventListener('paste', e => {
+    e.preventDefault()
+
+    let textArr = e.clipboardData.getData("text").split("\n")
+
+    for (let i in textArr) {
+        if (i == 0) {
+            let selection = window.getSelection()
+                selection.getRangeAt(0).insertNode(document.createTextNode(textArr[0]))
+                    selection.collapseToEnd() 
+        } else {
+            createNewLineCode(e, textArr[i])
+        }
+    }
+    
+    preCodeInput.lastElementChild.focus()
+    setLineHightligher()
+    
+    let selection = window.getSelection()
+        selection.setPosition(selection.focusNode, selection.focusNode.length)
+    
+
+    codeWrapper.scrollTo(codeWrapper.scrollWidth, 0)
+})
+
+
+
 // ============================ To do list ================================= //
-// todo : paste code : separating line, remove text formater
 // todo : highlighter
 
 // ======================== End of To do list ============================== //
