@@ -52,7 +52,7 @@ preCodeInput.addEventListener('keydown', (e) => {
 
     if (e.ctrlKey && e.key == 'a') {
         editableTrue(preCodeInput)
-
+        createCopySelection()
     } else if (e.key == "Backspace") {
         if (preCodeInput.getAttribute('contenteditable') == 'true') {
             linesCount = 1
@@ -133,13 +133,18 @@ function editableFalse(el) {
 }
 
 preCodeInput.addEventListener('pointermove', (e) => {
+    
     if (e.buttons == 1) {
-        // console.log(true);
-        editableTrue(preCodeInput)
-    } else {
-        editableFalse(preCodeInput)
+            editableTrue(preCodeInput)
+    } else
+        if (e.buttons != 1 && window.getSelection().type == 'Range') {
+            if (!document.querySelector('.copy-btn-popup'))
+                createCopySelection(e)
+    } else
+        {
+            editableFalse(preCodeInput)
     }
-
+    
 })
 
 // let lastElSelected = window.getSelection().focusNode.parentElement
@@ -478,6 +483,28 @@ document.body.addEventListener('keydown', e => {
 // End of console script
 
 
+
+// Popup button copy selection
+
+function createCopySelection(e) {
+        
+    let copyBtn = document.createElement('span')
+    copyBtn.classList.add('copy-btn-popup')
+    copyBtn.title = 'Copy'
+    document.querySelector('code.highlighted').append(copyBtn)
+    
+    container.addEventListener('click', (e) => {
+        let selectedText = window.getSelection().toString()
+
+        if (e.target.className == 'copy-btn-popup') {
+            navigator.clipboard.writeText(selectedText)
+        }
+        
+        copyBtn.remove()
+        window.getSelection().removeAllRanges() 
+    }, {once:true})
+
+}
 
 
 // ============================ To do list ================================= //
