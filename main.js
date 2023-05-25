@@ -49,7 +49,32 @@ preCodeInput.addEventListener('keydown', (e) => {
         setHeightCodeInput(linesCount)
         deleteLastLine()
     }
-    
+
+    if (e.ctrlKey && e.key == 'a') {
+        editableTrue(preCodeInput)
+
+    } else if (e.key == "Backspace") {
+        if (preCodeInput.getAttribute('contenteditable') == 'true') {
+            linesCount = 1
+            lineNumbersContainer.innerHTML = ''
+            preCodeInput.innerHTML = ''
+            editableFalse(preCodeInput)
+            
+            let newCode = document.createElement('code')
+            editableTrue(newCode)
+            newCode.tabIndex = 0
+            newCode.innerText = ''
+            newCode.classList.add('highlighted')
+            preCodeInput.append(newCode)
+            preCodeInput.firstElementChild.focus()
+
+            addNewLineNumber(linesCount)
+            setHeightCodeInput(linesCount)
+            setLineHightligher()
+
+            updateLineColInfo(getFocusedLine())
+        }
+    }
 })
 
 function setHeightCodeInput(linesCount) {
@@ -116,6 +141,9 @@ preCodeInput.addEventListener('pointermove', (e) => {
     }
 
 })
+
+// let lastElSelected = window.getSelection().focusNode.parentElement
+// let fistElSelected = window.getSelection().baseNode.parentElement
 // end
 
 // Hightlighting the active line / line with cursor
