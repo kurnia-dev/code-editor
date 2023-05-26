@@ -53,13 +53,20 @@ preCodeInput.addEventListener('keydown', (e) => {
         } catch { }
     }
 
-    if (e.key == "Backspace" && !e.target.innerText) {
-        try {
-            e.target.previousElementSibling.focus()
-        } catch { }
+    if (e.key == "Backspace" && caretPos == 0) {
         
         if (e.target.previousElementSibling) {
-            e.target.remove()
+            e.preventDefault()
+            let prevEl = e.target.previousElementSibling
+            let prevElTextLength = prevEl.innerText.length
+            let textAfterCaret = e.target.innerHTML
+                prevEl.focus()
+    
+                let selection = window.getSelection()
+                    prevEl.innerText += textAfterCaret
+                    selection.setPosition(prevEl.firstChild, prevElTextLength)
+                    
+                    e.target.remove()
         }
     }
 
