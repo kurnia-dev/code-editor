@@ -5,6 +5,7 @@ const consoleWrapper = document.querySelector('.console-wrapper')
 const textarea = document.querySelector('#console-input')
 const lineNumbersContainer = document.querySelector('.line-numbers')
 let linesCount = preCodeInput.childElementCount
+let caretPos = window.getSelection().focusOffset
 
 setHeightCodeInput()
 
@@ -32,14 +33,23 @@ preCodeInput.addEventListener('keydown', (e) => {
         createNewLineCode(e)
     }
 
+    if (e.key == "ArrowLeft" || e.key == "ArrowRight")
+        caretPos = window.getSelection().focusOffset
+
+    
     if (e.key == "ArrowDown") {
+        e.preventDefault()
         try {
             e.target.nextElementSibling.focus();
+            setCaretPosition(caretPos)
         } catch { }
     }
+    
     if (e.key == "ArrowUp") {
+        e.preventDefault()
         try {
             e.target.previousElementSibling.focus();
+            setCaretPosition(caretPos)
         } catch { }
     }
 
@@ -126,8 +136,8 @@ btn.addEventListener('click', () => {
 
 function updateLineColInfo(line) {
     let col = window.getSelection().focusOffset
-    let caretPos = document.querySelector('.caretPos')
-    caretPos.innerText = `Ln ${++line}, Col ${++col}`
+    let lineColInfo = document.querySelector('.lineColInfo')
+        lineColInfo.innerText = `Ln ${++line}, Col ${++col}`
 }
 
 
@@ -267,7 +277,7 @@ textarea.addEventListener('keydown', (e) => {
         e.preventDefault() // by default tab key is for change elements focus
         
         // to add indent if tab key pressed
-        let caretPos = e.target.selectionStart // caret is the cursor/text pointer, it will return the index position of caret from the string
+        caretPos = e.target.selectionStart // caret is the cursor/text pointer, it will return the index position of caret from the string
         let val = textarea.value
 
         textarea.value = // it will insert tab (space) into the caret position
@@ -530,26 +540,39 @@ codeWrapper.addEventListener('paste', e => {
 
     let textArr = e.clipboardData.getData("text").split("\n")
 
-    for (let i in textArr) {
-        if (i == 0) {
-            let selection = window.getSelection()
-                selection.getRangeAt(0).insertNode(document.createTextNode(textArr[0]))
-                    selection.collapseToEnd() 
-        } else {
-            createNewLineCode(e, textArr[i])
+    if (textArr.length == 1){
+        let selection = window.getSelection()
+            selection.getRangeAt(0).insertNode(document.createTextNode(textArr[0]))
+                selection.collapseToEnd()
+
+    } else {
+        for (let i in textArr) {
+            if (i == 0) {
+                let selection = window.getSelection()
+                    selection.getRangeAt(0).insertNode(document.createTextNode(textArr[0]))
+            } else {
+                createNewLineCode(e, textArr[i])
+            }
         }
+
+        preCodeInput.lastElementChild.focus()
+        setCaretPosition()
+
     }
-    
-    preCodeInput.lastElementChild.focus()
+
     setLineHightligher()
     
-    let selection = window.getSelection()
-        selection.setPosition(selection.focusNode, selection.focusNode.length)
-    
-
     codeWrapper.scrollTo(codeWrapper.scrollWidth, 0)
 })
 
+
+function setCaretPosition(offset) {
+    let selection = window.getSelection()
+
+        offset <= selection.focusNode.length && !!offset ? 
+            selection.setPosition(selection.focusNode, caretPos) :
+            selection.setPosition(selection.focusNode, selection.focusNode.length)  
+}
 
 
 // ============================ To do list ================================= //
