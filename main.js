@@ -65,12 +65,14 @@ preCodeInput.addEventListener('keydown', (e) => {
             let prevElTextLength = prevEl.innerText.length
             let textAfterCaret = e.target.innerHTML
                 prevEl.focus()
+                prevEl.innerText += textAfterCaret
     
-                let selection = window.getSelection()
-                    prevEl.innerText += textAfterCaret
-                    selection.setPosition(prevEl.firstChild, prevElTextLength)
+                if (prevElTextLength) {
+                    let selection = window.getSelection()
+                        selection.setPosition(prevEl.firstChild, prevElTextLength)
+                }
                     
-                    e.target.remove()
+                e.target.remove()
         }
     }
 
