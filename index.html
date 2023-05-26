@@ -5,10 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Code Editor</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="code-editor-container">
+    <div class="code-editor-container fullscreen">
       <span class="fullscreenToggle" title="Toggle Fullscreen"></span>
       <div class="files">
         <div class="file js active">
@@ -21,7 +22,7 @@
           <div class="line-numbers">
             <span class="highlighted">1</span>
           </div>
-          <div name="code input" id="codeinput" title="code" spellcheck="false">
+          <div name="code input" id="codeinput" spellcheck="false">
             <code
               contenteditable="true"
               tabindex="0"
@@ -61,7 +62,7 @@
       </div>
 
       <div class="code-info">
-        <div class="code-info-item caretPos" title="Tab Indent">
+        <div class="code-info-item lineColInfo" title="Tab Indent">
           Ln 1, Col 1
         </div>
         <div class="code-info-item spaces" title="Tab Indent">Spaces: 4</div>
