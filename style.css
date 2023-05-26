@@ -169,7 +169,7 @@ body {
   color: inherit;
   font-family: inherit;
   overflow: hidden;
-  white-space: nowrap;
+  white-space: pre;
   padding-right: 15vw;
 }
 
