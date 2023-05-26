@@ -415,17 +415,19 @@ function resize() {
 
 // override the default clear() method
 function clear() { 
-    Array.from(consoleHistory.children).forEach(child => {
-        child.remove()
-    })
+    console.log('called');
+    consoleHistory.innerHTML = ""
+    // Array.from(consoleHistory.children).forEach(child => {
+    //     child.remove()
+    // })
 }
 
 // override the default console.log() method
-const console = { 
-    log(val) {
-        return eval(val)
-    }
-}
+// const console = { 
+//     log(val) {
+//         return eval(val)
+//     }
+// }
 
 // add the code inputed and its result to Console-history element 
 // as a new children element
@@ -444,7 +446,10 @@ function addToHistory(code, output) {
     let consoleInput = document.createElement('div')
     consoleInput.classList.add('console-input')
     consoleInput.innerText = code // using innertext to maintain the breaking line
-    if (code != 'clear()') consoleHistory.append(consoleInput, consoleOutput) // only append if code is not clear()
+    if (code != 'clear()') {
+        consoleHistory.append(consoleInput, consoleOutput)
+    }
+    // only append if code is not clear()
     // if code is clear(), it will delete all history element
 }
 
@@ -502,7 +507,8 @@ consoleInput.addEventListener('keydown', (e) => {
                 eval(codeHistory + '\n' + code) // here i try evaluate codeHistory + new code, 
                 // if the eval() generates error, the codes bellow will not executed, 
                 // the error message will be catched and asigned to output
-                codeHistory += '\n' + code // if not error, then add new code to the history
+                if (code != 'clear()') codeHistory += '\n' + code // prevent clear() added to codehistory
+                // because, it will be executed every time, and console-history will always removed
                 output = eval(codeHistory) // if not error, output will have eval(codeHistory) return value
             } catch (err) {
                 output = err // but if eval(codeHistory) return error, the error message will be asigned to ouput
@@ -518,8 +524,7 @@ consoleInput.addEventListener('keydown', (e) => {
             consoleWrapper.scrollTo(0, (scrollHeight - height)) // to scroll down
 
             // save the history to sessionStorage
-            if (code != 'clear()') saveHistory(code) // prevent clear() saved to  history
-            // if clear() saved, it will be executed every time, and console-history will always removed
+            saveHistory(code) 
         }
 
         logIndex = logHistory.length // to reset the logIndex if Enter pressed
@@ -561,7 +566,7 @@ let saveHistory = code => { // save the log history to sessionStorage
         : sessionStorage.setItem('logHistory', JSON.stringify(logItem))
     
     // to update The Loghistory Array value
-    logHistory.push(code) 
+    logHistory.push(code)
 }
 
 
