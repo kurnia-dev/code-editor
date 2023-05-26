@@ -7,7 +7,11 @@ const lineNumbersContainer = document.querySelector('.line-numbers')
 let linesCount = preCodeInput.childElementCount
 let caretPos = window.getSelection().focusOffset
 
-setHeightCodeInput()
+document.body.onload = setHeightCodeInput()
+
+preCodeInput.addEventListener('keyup', (e) => {
+        caretPos = window.getSelection().focusOffset
+})
 
 function createNewLineCode(e, text) {
     let newCode = document.createElement('code')
@@ -32,10 +36,6 @@ preCodeInput.addEventListener('keydown', (e) => {
         e.preventDefault()
         createNewLineCode(e)
     }
-
-    if (e.key == "ArrowLeft" || e.key == "ArrowRight")
-        caretPos = window.getSelection().focusOffset
-
     
     if (e.key == "ArrowDown") {
         e.preventDefault()
