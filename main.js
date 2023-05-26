@@ -9,20 +9,24 @@ let caretPos = window.getSelection().focusOffset
 
 document.body.onload = setHeightCodeInput()
 
-preCodeInput.addEventListener('keyup', (e) => {
-        caretPos = window.getSelection().focusOffset
+preCodeInput.addEventListener('keyup', () => {
+    caretPos = window.getSelection().focusOffset
+})
+    
+preCodeInput.addEventListener('pointerup', () => {
+    caretPos = window.getSelection().focusOffset
 })
 
 function createNewLineCode(e, text) {
     let textAfterCaret = e.target.innerText.substring(caretPos)
     let textBeforeCaret = e.target.innerText.substring(0, caretPos)
-    e.target.innerText = textBeforeCaret
     
     let newCode = document.createElement('code')
-        editableTrue(newCode)
-        newCode.tabIndex = 0
-        newCode.innerHTML = text ?? textAfterCaret
+    editableTrue(newCode)
+    newCode.tabIndex = 0
+    newCode.innerHTML = text ?? textAfterCaret
         if (text == null){
+            e.target.innerText = textBeforeCaret
             e.target.after(newCode)
             e.target.nextElementSibling.focus()
         } else {
