@@ -14,10 +14,14 @@ preCodeInput.addEventListener('keyup', (e) => {
 })
 
 function createNewLineCode(e, text) {
+    let textAfterCaret = e.target.innerText.substring(caretPos)
+    let textBeforeCaret = e.target.innerText.substring(0, caretPos)
+    e.target.innerText = textBeforeCaret
+    
     let newCode = document.createElement('code')
         editableTrue(newCode)
         newCode.tabIndex = 0
-        newCode.innerHTML = text ?? ''
+        newCode.innerHTML = text ?? textAfterCaret
         if (text == null){
             e.target.after(newCode)
             e.target.nextElementSibling.focus()
