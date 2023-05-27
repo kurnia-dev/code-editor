@@ -11,26 +11,26 @@ const consoleInput = document.querySelector('#console-input')
 
 // Console Intruction
 const info = `
-    <div class="info">Instruction: 
-        <ul>
-            <li>You can input code bellow, then press "Enter" to execute.</li>
-            <li>Press "Shift + Enter" to add a new line.</li>
-            <li>Type "clear()" to clear the console history</li>
-            <li>
-                You can also type "console.log()" to log a value of variable
-                or code, but it not necessary.
-                <br />
-                <br />
-                Just type "1 + 2" instead of "console.log(1 + 2)" it will
-                generate the same result.
-            </li>
-            <li>Use Up and Down Arrows to get the command history.</li>
-        </ul>
-            <br />
-            <br />
-    Info : Type "clear()" to clear this message!
-    </div>
+<div class="info">
+    Instruction:
+    <ul>
+        <li>You can input code below, then press "Enter" to execute.</li>
+        <li>Press "Shift + Enter" to add a new line.</li>
+        <li>Type "clear()" to clear the console history.</li>
+        <li>
+            You can also type "console.log()" to log the value of a variable
+            or code, but it is not necessary.
+            <br /><br />
+            Just type "1 + 2" instead of "console.log(1 + 2)". It will
+            generate the same result.
+        </li>
+        <li>Use the Up and Down Arrows to navigate the command history.</li>
+    </ul>
+    <br /><br />
+    Info: Type "clear()" to clear this message!
+</div>
 `
+
 
 
 /**
@@ -88,9 +88,10 @@ function createElement({ name, id, classList, title, innerHTML, eventListener, a
 
 let caretPos = window.getSelection().focusOffset
 
-
-codeInput.addEventListener('keyup', () => {
-    caretPos = window.getSelection().focusOffset
+codeInput.addEventListener('keyup', (e) => {
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") {
+        caretPos = window.getSelection().focusOffset
+    }
 })
 
 codeInput.addEventListener('pointerup', () => {
@@ -107,7 +108,7 @@ document.body.onload = setHeightCodeInput()
 function setCaretPosition(offset) {
     let selection = window.getSelection()
 
-        offset <= selection.focusNode.length && !!offset ? 
+    !!offset && offset <= selection.focusNode.length ? 
             selection.setPosition(selection.focusNode, caretPos) :
             selection.setPosition(selection.focusNode, selection.focusNode.length)  
 }
