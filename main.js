@@ -33,6 +33,59 @@ const info = `
 `
 
 
+/**
+ * Creates an HTML element with the specified properties.
+ * @param {Object} properties - The properties object parameter.
+ * @param {string} properties.name - The name of the element to create. (Required)
+ * @param {string} [properties.id] - The ID to assign to the element (optional).
+ * @param {string|string[]} [properties.classList] - The class(es) to add to the element (optional).
+ * @param {string} [properties.title] - The title attribute of the element (optional).
+ * @param {string} [properties.innerHTML] - The inner HTML content of the element (optional).
+ * @param {Object} [properties.eventListener] - The event listener configuration (optional).
+ * @param {string} properties.eventListener.eventName - The name of the event to listen to.
+ * @param {Function} properties.eventListener.callback - The callback function for the event listener.
+ * @param {Object} [properties.action] - The action to perform on the target element (optional).
+ * @param {string} properties.action.target - The target element selector (e.g., ".className", "#id", "tagName").
+ * @param {string} properties.action.type - The type of action to perform. It can be 'append', 'prepend', 'after', or 'before'.
+ * @returns {HTMLElement} The created HTML element.
+ *
+ * @example
+ * // Usage examples
+ * const element = createElement('div', { classList: ['class1', 'class2'], eventListener: { eventName: 'click', callback: handleClick } });
+ * createElement('span', { action: { type: 'append', target: '.container' } });
+ */
+  
+function createElement({ name, id, classList, title, innerHTML, eventListener, action }) {
+    const el = document.createElement(name)
+  
+    if (id) el.id = id
+  
+    if (classList) {
+      // Add classes to the element
+      // Check if classList is an array, then add each class individually
+      // If classList is not an array, treat it as a single class and add it to the element
+      el.classList.add(...(classList instanceof Array ? classList : [classList]))
+    }
+  
+    if (title) el.title = title
+    if (innerHTML) el.innerHTML = innerHTML
+    if (eventListener) {
+      // Add event listener to the element
+      // Attach the event specified in eventListener.eventName and the callback function in eventListener.callback
+      el.addEventListener(eventListener.eventName, eventListener.callback)
+    }
+  
+    if (action) {
+      const { target, type } = action
+      // Execute the action on the target element
+      // Use the target selector to query the target element and perform the specified action (type) with the created element (el)
+      document.querySelector(target)[type](el)
+    }
+  
+    return el
+}
+  
+
 let caretPos = window.getSelection().focusOffset
 
 
@@ -62,16 +115,15 @@ function setCaretPosition(offset) {
 
 function addNewLineNumber(linesCount) {
     let newNumber = document.createElement('span')
-    newNumber.innerText = linesCount
+        newNumber.innerText = linesCount
 
     lineNumbersContainer.append(newNumber)
 }
 
 
 function deleteLastLine() {
-    if (lineNumbersContainer.childElementCount > 1) {
+    if (lineNumbersContainer.childElementCount > 1) 
         lineNumbersContainer.lastElementChild.remove()
-    }
 }
 
 
@@ -80,20 +132,21 @@ function createNewLineCode(e, text) {
     let textBeforeCaret = e.target.innerText.substring(0, caretPos)
     
     let newCode = document.createElement('code')
-    editableTrue(newCode)
-    newCode.tabIndex = 0
-    newCode.innerHTML = text ?? textAfterCaret
-        if (text == null){
-            e.target.innerText = textBeforeCaret
-            e.target.after(newCode)
-            e.target.nextElementSibling.focus()
-        } else {
-            e.target.parentElement.append(newCode)
-        }
+        setEditableTrue(newCode)
+        newCode.tabIndex = 0
+        newCode.innerHTML = text ?? textAfterCaret
+
+    if (text == null){
+        e.target.innerText = textBeforeCaret
+        e.target.after(newCode)
+        e.target.nextElementSibling.focus()
+    } else {
+        e.target.parentElement.append(newCode)
+    }
         
-        linesCount++
-        addNewLineNumber(linesCount)
-        setHeightCodeInput(linesCount)
+    linesCount++
+    addNewLineNumber(linesCount)
+    setHeightCodeInput(linesCount)
 }
 
 
@@ -104,33 +157,47 @@ function updateLineColInfo(line) {
 }
 
 
-function getFocusedLine() {
-    let focusEl = document.activeElement
-    let linesArr = Array.from(codeInput.children)
-    let lineNumberHasFocus = linesArr.indexOf(focusEl)
+function getFocusedLineIndexPosition() {
+    let focusedLine = document.activeElement
+    let codeInputLines = Array.from(codeInput.children)
+    let focusedLineIndexPosition = codeInputLines.indexOf(focusedLine)
 
-    return lineNumberHasFocus
+    return focusedLineIndexPosition
 }
 
 
-function createCopySelection(e) {
-        
-    let copyBtn = document.createElement('span')
-    copyBtn.classList.add('copy-btn-popup')
-    copyBtn.title = 'Copy'
-    document.querySelector('code.highlighted').append(copyBtn)
-    
-    container.addEventListener('click', (e) => {
-        let selectedText = window.getSelection().toString()
 
-        if (e.target.className == 'copy-btn-popup') {
-            navigator.clipboard.writeText(selectedText)
-        }
+function createCopySelectionButton() {
+
+    createElement({
+        name: "span", 
+        classList: "copy-btn-popup",
+        title: "Copy", 
+        action: {
+            type: "append",
+            target: "code.highlighted"
+        } 
+    })
+
+    container.addEventListener('click', (e) => {
+        if (e.target.className == 'copy-btn-popup')
+            copySelection() 
         
-        copyBtn.remove()
-        window.getSelection().removeAllRanges() 
+        deleteCopyButton()
     }, {once:true})
 
+}
+
+let copySelection = () => {
+    let selectedText = window.getSelection().toString()
+    navigator.clipboard.writeText(selectedText)
+    deleteCopyButton()
+}
+
+let deleteCopyButton = () => {
+    let copyBtn = document.querySelector('.copy-btn-popup')
+    if (copyBtn) copyBtn.remove()
+    window.getSelection().removeAllRanges()
 }
 
 
@@ -148,11 +215,11 @@ function setHeightCodeInput(linesCount) {
 }
 
 
-function editableTrue(el) {
+function setEditableTrue(el) {
     el.setAttribute('contenteditable', true)
 }
 
-function editableFalse(el) {
+function setEditableFalse(el) {
     el.setAttribute('contenteditable', false)
 }
 
@@ -174,8 +241,8 @@ function setLineHightligher() {
     });
     
     try {
-        lineNumberList[getFocusedLine()].classList.add('highlighted')
-        lineCodeList[getFocusedLine()].classList.add('highlighted')
+        lineNumberList[getFocusedLineIndexPosition()].classList.add('highlighted')
+        lineCodeList[getFocusedLineIndexPosition()].classList.add('highlighted')
     } catch { }
     
 }
@@ -242,9 +309,13 @@ codeInput.addEventListener('keydown', (e) => {
 
 
     if (e.ctrlKey && e.key == 'a') {
-        editableTrue(codeInput)
-        createCopySelection()
+        setEditableTrue(codeInput)
+        createCopySelectionButton()
 
+    }
+
+    if (e.ctrlKey && e.key == 'c') {
+        copySelection()
     }
     
     if (e.key == "Backspace") {
@@ -253,10 +324,10 @@ codeInput.addEventListener('keydown', (e) => {
             linesCount = 1
             lineNumbersContainer.innerHTML = ''
             codeInput.innerHTML = ''
-            editableFalse(codeInput)
+            setEditableFalse(codeInput)
             
             let newCode = document.createElement('code')
-                editableTrue(newCode)
+                setEditableTrue(newCode)
                 newCode.tabIndex = 0
                 newCode.innerText = ''
                 newCode.classList.add('highlighted')
@@ -268,7 +339,7 @@ codeInput.addEventListener('keydown', (e) => {
             setHeightCodeInput(linesCount)
             setLineHightligher()
 
-            updateLineColInfo(getFocusedLine())
+            updateLineColInfo(getFocusedLineIndexPosition())
         }
     }
 })
@@ -296,14 +367,14 @@ btn.addEventListener('click', () => {
 codeInput.addEventListener('pointermove', (e) => {
     
     if (e.buttons == 1) {
-            editableTrue(codeInput)
+            setEditableTrue(codeInput)
     } else
         if (e.buttons != 1 && window.getSelection().type == 'Range') {
             if (!document.querySelector('.copy-btn-popup'))
-                createCopySelection(e)
+                createCopySelectionButton(e)
     } else
         {
-            editableFalse(codeInput)
+            setEditableFalse(codeInput)
     }
     
 })
@@ -325,12 +396,12 @@ codeInput.addEventListener('keydown', (e) => {
 codeInput.addEventListener('click', (e) => {
     if (e.target.localName == 'code'){
         setLineHightligher() 
-        updateLineColInfo(getFocusedLine())
+        updateLineColInfo(getFocusedLineIndexPosition())
     }
 })
 
 codeInput.addEventListener('keyup', () => {
-        updateLineColInfo(getFocusedLine())
+        updateLineColInfo(getFocusedLineIndexPosition())
 })
 
 
