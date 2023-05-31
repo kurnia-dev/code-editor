@@ -2,7 +2,6 @@ const container = document.querySelector('.code-editor-container')
 const codeWrapper = document.querySelector('.code-wrapper')
 const codeInput = document.querySelector('#codeinput')
 const lineNumbersContainer = document.querySelector('.line-numbers')
-let linesCount = codeInput.childElementCount
 
 // Varible for console start here //
 const consoleWrapper = document.querySelector('.console-wrapper')
@@ -11,51 +10,107 @@ const consoleInput = document.querySelector('#console-input')
 
 // Console Intruction
 const info = `
-<div class="info">
+<div class='info'>
     Instruction:
     <ul>
-        <li>You can input code below, then press "Enter" to execute.</li>
-        <li>Press "Shift + Enter" to add a new line.</li>
-        <li>Type "clear()" to clear the console history.</li>
+        <li>You can input code below, then press 'Enter' to execute.</li>
+        <li>Press 'Shift + Enter' to add a new line.</li>
+        <li>Type 'clear()' to clear the console history.</li>
         <li>
-            You can also type "console.log()" to log the value of a variable
+            You can also type 'console.log()' to log the value of a variable
             or code, but it is not necessary.
             <br /><br />
-            Just type "1 + 2" instead of "console.log(1 + 2)". It will
+            Just type '1 + 2' instead of 'console.log(1 + 2)'. It will
             generate the same result.
         </li>
         <li>Use the Up and Down Arrows to navigate the command history.</li>
     </ul>
     <br /><br />
-    Info: Type "clear()" to clear this message!
+    Info: Type 'clear()' to clear this message!
 </div>
 `
-
-
 
 /**
  * Creates an HTML element with the specified properties.
  * @param {Object} properties - The properties object parameter.
- * @param {string} properties.name - The name of the element to create. (Required)
- * @param {string} [properties.id] - The ID to assign to the element (optional).
- * @param {string|string[]} [properties.classList] - The class(es) to add to the element (optional).
- * @param {string} [properties.title] - The title attribute of the element (optional).
- * @param {string} [properties.innerHTML] - The inner HTML content of the element (optional).
- * @param {Object} [properties.eventListener] - The event listener configuration (optional).
+ * @param {string} properties.name - (Required) The name of the element to create. 
+ * @param {string} [properties.id] - (Optional) The ID to assign to the element.
+ * @param {string|string[]} [properties.classList] - (Optional) The class(es) to add to the element.
+ * @param {string} [properties.title] - (Optional) The title attribute of the element.
+ * @param {string} [properties.innerHTML] - (Optional) The inner HTML content of the element.
+ * @param {string} [properties.innerText] - (Optional) The inner text of the element.
+ * @param {string} [properties.textContent] - (Optional) The text content of the element.
+ * @param {Object} [properties.eventListener] - (Optional) The event listener configuration.
  * @param {string} properties.eventListener.eventName - The name of the event to listen to.
  * @param {Function} properties.eventListener.callback - The callback function for the event listener.
- * @param {Object} [properties.action] - The action to perform on the target element (optional).
- * @param {string} properties.action.target - The target element selector (e.g., ".className", "#id", "tagName").
+ * @param {Object} [properties.action] - (Optional) The action to perform on the target element.
+ * @param {string} properties.action.target - The target element selector (e.g., '.className', '#id', 'tagName'). - Variable name e.g parentElement
  * @param {string} properties.action.type - The type of action to perform. It can be 'append', 'prepend', 'after', or 'before'.
+ * @param {Object} [properties.attribute] - (Optional) The attributes to be set on the element.
+ * @param {Object} [properties.style] - (Optional)The style configuration object for CSS styles.
+ * 
  * @returns {HTMLElement} The created HTML element.
+ * 
+ * Note:
+ * - The parameter object can be filled in any order.
+ * - To set attributes on the element, use the `attribute` object with the format { name: 'value' }.
+ * - To set stylesheet, use the `style` object width the format {property : value}
+ * - The property key must follow JavaScript Style Property Rules
+ * 
+ * @example 
+ * attribute: {
+ *      type: 'text',
+ *      spellcheck: 'false'
+ * } 
+ * 
+ * @example
+ * style: {
+ *      color: 'red',
+ *      fontSize: '16px',
+ * }
+ * 
+ * @example
+ * // using selector
+ * action: {
+ *      type: 'append',
+ *      target: '.className',
+ * }
+ * 
+ * @example
+ * // using variable name
+ * action: {
+ *      type: 'append',
+ *      target: parentElement,
+ * }
+ * 
  *
  * @example
- * // Usage examples
- * const element = createElement('div', { classList: ['class1', 'class2'], eventListener: { eventName: 'click', callback: handleClick } });
- * createElement('span', { action: { type: 'append', target: '.container' } });
+ * const element = createElement({
+ *      name: 'div', 
+ *      id: 'elem', 
+ *      classlist: ['firstClass', 'secondClass'], // or 'onlyOneClass' //
+ *      title: 'Element Title',
+ *      textContent: 'Hello World!',
+ *      attribute: {
+ *          contenteditable: true, 
+ *          tabIndex: 0
+ *      },
+ *      eventListener: {
+ *          eventName: 'click',
+ *          callback: handleClick,
+ *      },
+ *      style: {
+ *          textAlign: 'justify',
+ *          color: 'white'
+ *      }, 
+ *      action: {
+ *          type: 'before',
+ *          target: elementVariable, or // '.elementClass'
+ *      }
+ * })
  */
-  
-function createElement({ name, id, classList, title, innerHTML, eventListener, action }) {
+
+function createElement({ name, id, classList, title, innerHTML, innerText, textContent, attribute, style, eventListener, action }) {
     const el = document.createElement(name)
   
     if (id) el.id = id
@@ -69,6 +124,21 @@ function createElement({ name, id, classList, title, innerHTML, eventListener, a
   
     if (title) el.title = title
     if (innerHTML) el.innerHTML = innerHTML
+    if (innerText) el.innerText = innerText
+    if (textContent) el.textContent = textContent
+
+    if (attribute && typeof attribute === 'object') {
+        for (let name in attribute) {
+            el.setAttribute(name, attribute[name])
+        }
+    }
+
+    if (style) {
+        for (let prop in style) {
+            el.style[prop] = style[prop]
+        }
+    }
+
     if (eventListener) {
       // Add event listener to the element
       // Attach the event specified in eventListener.eventName and the callback function in eventListener.callback
@@ -76,20 +146,32 @@ function createElement({ name, id, classList, title, innerHTML, eventListener, a
     }
   
     if (action) {
-      const { target, type } = action
-      // Execute the action on the target element
-      // Use the target selector to query the target element and perform the specified action (type) with the created element (el)
-      document.querySelector(target)[type](el)
+        const { target, type } = action
+        // Execute the action on the target element
+        // Use the target querySelector e.g `.className` or direcly variable name e.g parentElement
+        if (typeof target == 'string') {
+            document.querySelector(target)[type](el)
+        } else {
+            target[type](el)
+        }
     }
   
     return el
 }
   
 
+/**
+ * Variable to track the current position of the caret within the code editor lines.
+ * This value can be modified based on user actions such as input or click events. 
+ * 
+ * - The `caretPos` variable stores the current position of the caret within the lines of the code editor.
+ * - It represents the index or offset where new content will be inserted or where actions related to the selected content will occur.
+ * - The value of `caretPos` can change dynamically as the user interacts with the code editor, such as typing or clicking.
+ */
 let caretPos = window.getSelection().focusOffset
 
 codeInput.addEventListener('keyup', (e) => {
-    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") {
+    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') {
         caretPos = window.getSelection().focusOffset
     }
 })
@@ -99,26 +181,69 @@ codeInput.addEventListener('pointerup', () => {
 })
 
 
+/**
+ * The number of lines of code in the code input of the code editor.
+ * @type {number}
+ */
+let linesCount = codeInput.childElementCount
+
 // ====================================================== //
 //                CODE EDITOR FUNCTIONS                   //
 // ====================================================== //
 
 document.body.onload = setHeightCodeInput()
 
-function setCaretPosition(offset) {
-    let selection = window.getSelection()
+/**
+ * Sets the caret position within the code editor based on the type of event.
+ * This function ensures that the caret position remains consistent when using arrow keys or after a paste operation.
+ * 
+ * @param {string} eventType - The type of event ('keydown' or 'paste').
+*/
+function setCaretPosition(eventType) {
+    const selection = window.getSelection()
+    let focusNode = selection.focusNode
+    
+    // Check if the focus node is an element
+    // If it is, we need to find the first child (text node) to work with
+    if (focusNode instanceof Element) {
+        if (focusNode.hasChildNodes()) {
+            focusNode = focusNode.firstChild
+        } 
+    }
 
-    !!offset && offset <= selection.focusNode.length ? 
-            selection.setPosition(selection.focusNode, caretPos) :
-            selection.setPosition(selection.focusNode, selection.focusNode.length)  
+    const focusNodeLength = focusNode.length ?? 0
+
+    // Handle caret position for keydown event
+    // Ensure the caret position remains consistent when using arrow keys
+    // If caretPos is within the length of the focus node, set the caret position accordingly
+    // Otherwise, set the caret position to the end of the focus node
+    if (eventType == 'keydown') {
+        if (caretPos <= focusNodeLength) {
+            selection.setPosition(focusNode, caretPos)
+        } else {
+            selection.setPosition(focusNode, focusNodeLength)  
+        }
+    }
+    
+    // Handle caret position for paste event
+    // Set the caret position to the end of the focus node after a paste operation
+    if (eventType == 'paste') {
+        selection.setPosition(focusNode, focusNodeLength)
+    }
+    
 }
 
-
+/**
+ * Adds a new line number to the line numbers container based on the current count of lines in the code editor.
+ * This function is called when an Enter or paste event occurs.
+ * 
+ * @param {number} linesCount - The current count of lines in the code editor.
+ */
 function addNewLineNumber(linesCount) {
-    let newNumber = document.createElement('span')
-        newNumber.innerText = linesCount
-
-    lineNumbersContainer.append(newNumber)
+    createElement({
+        name: 'span', innerText: linesCount,
+        action: { type: 'append', target: lineNumbersContainer }
+    })
 }
 
 
@@ -127,15 +252,24 @@ function deleteLastLine() {
         lineNumbersContainer.lastElementChild.remove()
 }
 
-
-function createNewLineCode(e, text) {
-    let textAfterCaret = e.target.innerText.substring(caretPos)
-    let textBeforeCaret = e.target.innerText.substring(0, caretPos)
+/**
+ * Inserts a new line of code in a code input element.
+ * @param {Event} e - The event object.
+ * @param {string|null} text - The text to be inserted. If null, the text after the caret position will be inserted.
+ * @returns {void}
+ */
+function insertNewLineCode(e, text = null) {
+    const textAfterCaret = e.target.innerText.substring(caretPos)
+    const textBeforeCaret = e.target.innerText.substring(0, caretPos)
     
-    let newCode = document.createElement('code')
-        setEditableTrue(newCode)
-        newCode.tabIndex = 0
-        newCode.innerHTML = text ?? textAfterCaret
+    const newCode = createElement({
+        name: 'code', 
+        innerHTML: text || textAfterCaret,
+        attribute: {
+            contenteditable: true, 
+            tabindex : 0
+        }
+    })
 
     if (text == null){
         e.target.innerText = textBeforeCaret
@@ -150,102 +284,151 @@ function createNewLineCode(e, text) {
     setHeightCodeInput(linesCount)
 }
 
-
-function updateLineColInfo(line) {
-    let col = window.getSelection().focusOffset
-    let lineColInfo = document.querySelector('.lineColInfo')
-        lineColInfo.innerText = `Ln ${++line}, Col ${++col}`
+/**
+ * Updates the line and column information in the lineColInfo element based on the current caret position.
+ * 
+ * The line number is determined by the focused line index position.
+ * 
+ * The column number is obtained from the caret's focus offset.
+ * 
+ * The updated information is displayed in the lineColInfo element in the format "Ln X, Col Y".
+@returns {void}
+*/
+function updateLineColInfo() {
+    const lineColInfo = document.querySelector('.lineColInfo');
+    let line =  getFocusedLineIndexPosition()
+    let col = window.getSelection().focusOffset;
+    lineColInfo.innerText = `Ln ${++line}, Col ${++col}`;
 }
+  
 
-
+/**
+ * Returns the index position of the currently focused line.
+ * 
+ * It finds the element that currently has focus within the code input,
+ * and then determines its index position among the codeInputLines.
+ * 
+ * The codeInputLines represent all the lines in the code input.
+ * @returns {number} The index position of the currently focused line.
+*/
 function getFocusedLineIndexPosition() {
-    let focusedLine = document.activeElement
-    let codeInputLines = Array.from(codeInput.children)
-    let focusedLineIndexPosition = codeInputLines.indexOf(focusedLine)
+    const focusedLine = document.activeElement
+    const codeInputLines = Array.from(codeInput.children)
+    const focusedLineIndexPosition = codeInputLines.indexOf(focusedLine)
 
     return focusedLineIndexPosition
 }
 
 
-
+/**
+ * This function is triggered when the user makes a selection.
+ * It adds a copy button to the highlighted code, allowing the user to easily copy the selected text to the clipboard.
+ * 
+ * After copying the text or when clicked outside the button, the button is removed.
+ * If user copies using  `Ctrl + c`, the button is also removed.
+ * 
+ * @returns {void}
+ */
 function createCopySelectionButton() {
-
     createElement({
-        name: "span", 
-        classList: "copy-btn-popup",
-        title: "Copy", 
+        name: 'span', 
+        classList: 'copy-btn-popup',
+        title: 'Copy', 
         action: {
-            type: "append",
-            target: "code.highlighted"
+            type: 'append',
+            target: 'code.highlighted'
         } 
     })
 
-    container.addEventListener('click', (e) => {
-        if (e.target.className == 'copy-btn-popup')
-            copySelection() 
-        
+    container.addEventListener('pointerdown', (e) => {
+        if (e.target.className == 'copy-btn-popup') copySelection() 
+        deleteCopyButton() // Called if user click outside the copy button
+    }, { once: true })
+    
+    const copySelection = () => {
+        const selectedText = window.getSelection().toString()
+        navigator.clipboard.writeText(selectedText)
         deleteCopyButton()
-    }, {once:true})
-
-}
-
-let copySelection = () => {
-    let selectedText = window.getSelection().toString()
-    navigator.clipboard.writeText(selectedText)
-    deleteCopyButton()
-}
-
-let deleteCopyButton = () => {
-    let copyBtn = document.querySelector('.copy-btn-popup')
-    if (copyBtn) copyBtn.remove()
-    window.getSelection().removeAllRanges()
+    }
+    
+    const deleteCopyButton = () => {
+        const copyBtn = document.querySelector('.copy-btn-popup')
+        if (copyBtn) copyBtn.remove()
+        window.getSelection().removeAllRanges()
+    }
 }
 
 
+
+/**
+ * Sets the height of the code input based on the number of lines.
+ * 
+ * Note: 
+ * - See the code implementation details inside the function.
+ *
+ * @param {number} linesCount - The current count of lines in the code input.
+ * @returns {void}
+*/
 function setHeightCodeInput(linesCount) {
-    let scrollPos = document.querySelector('.code-wrapper').scrollTop 
-    let linesHeight = linesCount * 21 // 21 is lineheight (in 'px') declared in css 
+    const scrollPos = document.querySelector('.code-wrapper').scrollTop
+    const lineElement = document.querySelector('#codeinput code')
+    const lineHeight = lineElement.offsetHeight
+    const totalLineHeight = linesCount * lineHeight
+    const codeWrapperHeight = codeWrapper.offsetHeight
+    
+    // Set the height of code input to 'max-content' temporarily
     codeInput.style.height = 'max-content'
-    let codeWrapperHeight = codeWrapper.offsetHeight
     
-    codeInput.style.height = linesHeight + codeWrapperHeight - 64 + 'px'
+
+    // Set the final height of code input by subtracting 3 times the line height
+    // This ensures that the last 3 lines remain visible when the user scrolls to the bottom
+    codeInput.style.height = totalLineHeight + codeWrapperHeight - (3 * lineHeight) + 'px'
     
-    linesHeight < codeWrapperHeight ?
-        codeWrapper.scrollTo(0, scrollPos) :
-        codeWrapper.scrollBy(0, 21) // to add some space between the line adn console
+    // Check if the lines height is less than the code wrapper height
+    // If true, scroll to the previous scroll position
+    // If false, scroll by the line height to add some space between the lines and the console
+    if (totalLineHeight < codeWrapperHeight) {
+        codeWrapper.scrollBy(0, scrollPos)
+    } else {
+        codeWrapper.scrollBy(0, lineHeight)
+    }
+} 
+
+
+/**
+ * @param {boolean} status - The contenteditable status to be set (true or false)
+ * @param {HTMLElement[]} listEl - The element(s) to be modified. You can pass one or more element.
+ * @example 
+ * setEditableStatus(true, firstEl, secondEl);
+ * setEditableStatus(false, element);
+ * setEditableStatus(false, ...ArrayVariable);
+ * setEditableStatus(false, ...HTMLCollection);
+ */
+function setEditableStatus(status, ...listEl) {
+    for (const el of listEl) el.setAttribute('contenteditable', status)
 }
 
 
-function setEditableTrue(el) {
-    el.setAttribute('contenteditable', true)
-}
 
-function setEditableFalse(el) {
-    el.setAttribute('contenteditable', false)
-}
-
-
+/**
+ * Highlights the currently focused line in the code editor.
+ * This function should be called when there is a change in focus within the code editor,
+ * such as when the user clicks or interacts with a specific line.
+ * 
+ * It ensures that the focused line stands out visually by applying the `highlighted` class
+ * to the appropriate line number and line code elements.
+ * @returns {void}
+ */
 function setLineHightligher() {
-    let lineNumberList = Array.from(lineNumbersContainer.children)
-    let lineCodeList = Array.from(codeInput.children)
+    const lineNumberList = Array.from(lineNumbersContainer.children)
+    const lineCodeList = Array.from(codeInput.children)
 
-    lineNumberList.forEach(line => {
-        if (line.classList.contains('highlighted')) {
-            line.classList.remove('highlighted')
-        } 
-    });
-
-    lineCodeList.forEach(code => {
-        if (code.classList.contains('highlighted')) {
-            code.classList.remove('highlighted')
-        } 
-    });
+    lineNumberList.forEach(line => line.classList.remove('highlighted'))
+    lineCodeList.forEach(code => code.classList.remove('highlighted'))
     
-    try {
-        lineNumberList[getFocusedLineIndexPosition()].classList.add('highlighted')
-        lineCodeList[getFocusedLineIndexPosition()].classList.add('highlighted')
-    } catch { }
-    
+    const focusedLineIndex = getFocusedLineIndexPosition()
+    lineNumberList[focusedLineIndex]?.classList.add('highlighted')
+    lineCodeList[focusedLineIndex]?.classList.add('highlighted')
 }
 
 
@@ -256,48 +439,88 @@ function setLineHightligher() {
 //              CODE EDITOR EVENT LISTENER                //
 // ====================================================== //
 
+
+/**
+ * Event listener for the 'keydown' event on the codeInput element.
+ * Handles various keyboard inputs within the code editor.
+ *
+ * @param {KeyboardEvent} e - The keyboard event object.
+ */
 codeInput.addEventListener('keydown', (e) => {
 
     if (e.key == 'Enter') {
         e.preventDefault()
-        createNewLineCode(e)
+        insertNewLineCode(e)
     }
 
     
-    if (e.key == "ArrowDown") {
+    if (e.key == 'ArrowDown' || e.key == 'ArrowUp') {
         e.preventDefault()
-        try {
-            e.target.nextElementSibling.focus();
-            setCaretPosition(caretPos)
-        } catch { }
-    }
 
+        const target = e.key == 'ArrowDown' ?   
+            e.target.nextElementSibling : 
+            e.target.previousElementSibling
+            
+        if (target) {
+            target.focus()
+            setCaretPosition(e.type)
+        }
+
+    }
     
-    if (e.key == "ArrowUp") {
-        e.preventDefault()
-        try {
-            e.target.previousElementSibling.focus();
-            setCaretPosition(caretPos)
-        } catch { }
-    }
 
+    if (e.key == 'Backspace') {
+        if (window.getSelection().type == 'Caret' && caretPos == 0) {
+            if (!codeInput.isContentEditable) {
+                const prevEl = e.target.previousElementSibling
 
-    if (e.key == "Backspace" && caretPos == 0) {
+                if (prevEl) {
+                    e.preventDefault()
         
-        if (e.target.previousElementSibling) {
-            e.preventDefault()
-            let prevEl = e.target.previousElementSibling
-            let prevElTextLength = prevEl.innerText.length
-            let textAfterCaret = e.target.innerHTML
-                prevEl.focus()
-                prevEl.innerText += textAfterCaret
-    
-                if (prevElTextLength) {
-                    let selection = window.getSelection()
+                    const prevElTextLength = prevEl.innerText.length
+                    const textAfterCaret = e.target.innerHTML
+        
+                    prevEl.focus()
+                    prevEl.innerText += textAfterCaret
+            
+                    if (prevElTextLength) {
+                        const selection = window.getSelection()
                         selection.setPosition(prevEl.firstChild, prevElTextLength)
+                    }
+                        
+                    e.target.remove()
                 }
+            }
+        }
+        
+
+        if (window.getSelection().type == 'Range') {
+            if (codeInput.isContentEditable) {
+                linesCount = 1
+                lineNumbersContainer.innerHTML = ''
+                codeInput.innerHTML = ''
+                setEditableStatus(false, codeInput)
+                
+                createElement({
+                    name: 'code', 
+                    classList: 'highlighted', 
+                    innerText: '',
+                    attribute: {
+                        contenteditable: true, 
+                        tabindex: 0
+                    }, 
+                    action: {
+                        type: 'append', 
+                        target: '#codeinput'
+                    }
+                })
                     
-                e.target.remove()
+                codeInput.firstElementChild.focus()
+                addNewLineNumber(linesCount)
+                setHeightCodeInput(linesCount)
+                setLineHightligher()
+                updateLineColInfo()
+            }
         }
     }
 
@@ -308,52 +531,43 @@ codeInput.addEventListener('keydown', (e) => {
         deleteLastLine()
     }
 
-
     if (e.ctrlKey && e.key == 'a') {
-        setEditableTrue(codeInput)
+        setEditableStatus(true, codeInput)
         createCopySelectionButton()
-
     }
 
     if (e.ctrlKey && e.key == 'c') {
         copySelection()
     }
     
-    if (e.key == "Backspace") {
 
-        if (codeInput.getAttribute('contenteditable') == 'true') {
-            linesCount = 1
-            lineNumbersContainer.innerHTML = ''
-            codeInput.innerHTML = ''
-            setEditableFalse(codeInput)
-            
-            let newCode = document.createElement('code')
-                setEditableTrue(newCode)
-                newCode.tabIndex = 0
-                newCode.innerText = ''
-                newCode.classList.add('highlighted')
-                
-            codeInput.append(newCode)
-            codeInput.firstElementChild.focus()
+    let key = [ // These key codes represent the keys that can potentially change the line position when pressed.
+        8,   // Backspace
+        13,  // Enter
+        35,  // End
+        36,  // Home
+        37,  // Left Arrow
+        38,  // Up Arrow
+        39,  // Right Arrow
+        40,  // Down Arrow
+        46   // Delete
+    ]
 
-            addNewLineNumber(linesCount)
-            setHeightCodeInput(linesCount)
-            setLineHightligher()
-
-            updateLineColInfo(getFocusedLineIndexPosition())
-        }
+    if (key.includes(e.keyCode)) {
+        // Trigger the setLineHightligher() function to highlight the line that is focused after one of the specified keys is pressed.
+        setLineHightligher()
     }
+
 })
-
-
 
 // ====================================================== //
 //              Feature: Toggle Fullscreen                //
 // ====================================================== //
 
-const btn = document.querySelector('.fullscreenToggle')
-btn.addEventListener('click', () => {
-    btn.classList.toggle('active')
+const fullscreenToggleBtn = document.querySelector('.fullscreenToggle')
+
+fullscreenToggleBtn.addEventListener('click', () => {
+    fullscreenToggleBtn.classList.toggle('active')
     container.classList.toggle('fullscreen')
     setHeightCodeInput(linesCount)
 })
@@ -364,45 +578,58 @@ btn.addEventListener('click', () => {
 //            Feature : select code with mouse            //
 // ====================================================== //
 
-
-codeInput.addEventListener('pointermove', (e) => {
-    
-    if (e.buttons == 1) {
-            setEditableTrue(codeInput)
-    } else
-        if (e.buttons != 1 && window.getSelection().type == 'Range') {
-            if (!document.querySelector('.copy-btn-popup'))
-                createCopySelectionButton(e)
-    } else
-        {
-            setEditableFalse(codeInput)
-    }
-    
+codeInput.addEventListener('pointerdown', () => {
+    codeInput.addEventListener('pointermove', onPointerMove)
+    codeInput.addEventListener('pointerup', onPointerUp)
 })
 
 
-codeInput.addEventListener('keydown', (e) => {
-    let key = [8, 13, 35, 36, 37, 38, 39, 40, 46]
-    if (key.includes(e.keyCode)) {
-        setLineHightligher()
+/**
+ * Check if pointer button is pressed while moving.
+ * Then, make the codeInput to editable to allow user select multi line code. 
+ */
+function onPointerMove(e) {
+    if (e.buttons === 1) {
+        setEditableStatus(true, codeInput)
     }
-})
+}
+
+
+/**
+ * If the selection type is range after pointerup occurs, 
+ * this function will call createCopySelectionButton() to create copy button.
+ * 
+ * Then, removes the pointermove and pointerup events.
+ */
+function onPointerUp() {
+    const copyBtn = document.querySelector('.copy-btn-popup')
+
+    if (window.getSelection().type === 'Range') {
+        if (!copyBtn) createCopySelectionButton()
+    }
+
+    setEditableStatus(false, codeInput)
+
+    codeInput.removeEventListener('pointermove', onPointerMove)
+    codeInput.removeEventListener('pointerup', onPointerUp)
+}
+
 
 
 
 // ====================================================== //
-//     Feature: display Line and Column position info     //
+//     Feature: Display Line and Column position info     //
 // ====================================================== //
 
 codeInput.addEventListener('click', (e) => {
     if (e.target.localName == 'code'){
         setLineHightligher() 
-        updateLineColInfo(getFocusedLineIndexPosition())
+        updateLineColInfo()
     }
 })
 
 codeInput.addEventListener('keyup', () => {
-        updateLineColInfo(getFocusedLineIndexPosition())
+        updateLineColInfo()
 })
 
 
@@ -410,49 +637,62 @@ codeInput.addEventListener('keyup', () => {
 //                  Paste Event Handler                   //
 // ====================================================== //
 
-// paste text into multi line and remove text formater :
-
-// by default, if user paste text, the text format will be pasted
-// it must be prevented
-
-// if user copy multi line and paste it, it will just be one line
-// it must be separated by spliting into array, 
-// and create a new line for each array
-
-codeWrapper.addEventListener('paste', e => {
-    e.preventDefault()
-
-    let textArr = e.clipboardData.getData("text").split("\n")
-
-    if (textArr.length == 1){
-        let selection = window.getSelection()
-            selection.getRangeAt(0).insertNode(document.createTextNode(textArr[0]))
-                selection.collapseToEnd()
-
+/**
+ * Handles the paste event and processes the pasted text to create multiple lines without text formatting.
+ * By default, when a user pastes text, the formatting is preserved. 
+ * This function prevents that behavior.
+ * 
+ * If the user copies multiple lines and pastes them, they will be pasted as a single line.
+ * This function splits the pasted text into an array and creates a new line for each element.
+ * 
+ * @param {ClipboardEvent} event - The paste event object.
+ * @returns {void}
+ */
+function handlePaste(event) {
+    event.preventDefault()
+  
+    const textArr = event.clipboardData.getData('text').split('\n')
+  
+    if (textArr.length == 1) {
+      event.target.innerText += textArr[0]
+      setCaretPosition(event.type)
     } else {
-        for (let i in textArr) {
-            if (i == 0) {
-                let selection = window.getSelection()
-                    selection.getRangeAt(0).insertNode(document.createTextNode(textArr[0]))
-            } else {
-                createNewLineCode(e, textArr[i])
-            }
+      for (let i in textArr) {
+        if (i == 0) {
+          event.target.innerText += textArr[0]
+        } else {
+          insertNewLineCode(event, textArr[i])
         }
+      }
+  
+      codeInput.lastElementChild.focus()
+      setCaretPosition(event.type)
+    }
+  
+    setLineHightligher()
+    const caretOffset = getCaretOffset() - codeInput.offsetLeft
+  
+    if (caretOffset > codeWrapper.offsetWidth - codeInput.offsetLeft) {
+      codeWrapper.scrollTo(caretOffset, 0)
+    }
+}
+  
+codeInput.addEventListener('paste', handlePaste)
+  
 
-        codeInput.lastElementChild.focus()
-        setCaretPosition()
 
+
+
+function getCaretOffset() {
+    const selection = window.getSelection()
+
+    if (selection.rangeCount > 0) {
+        const caretRect = selection.getRangeAt(0).getBoundingClientRect()
+        return caretRect.left + codeWrapper.scrollLeft
     }
 
-    setLineHightligher()
-    
-    codeWrapper.scrollTo(codeWrapper.scrollWidth, 0)
-})
-
-
-
-
-
+    return 0
+}
 
 
 
@@ -475,54 +715,58 @@ codeWrapper.addEventListener('paste', e => {
 //               Console Functions start here             //
 // ====================================================== //
 
-let openConsole = () => {
-    openConsoleBtn.style.opacity = 0
-    consoleWrapper.style.height = heightBeforeClosed + 'px'   
-}
-
-function resize() {
-    consoleInput.style.height = 'auto' // to reset the height 
-    consoleInput.style.height = (consoleInput.scrollHeight) + 'px' // then set again the height
-}
-
 // override the default clear() method
 function clear() { 
-    console.log('called');
-    consoleHistory.innerHTML = ""
-    // Array.from(consoleHistory.children).forEach(child => {
-    //     child.remove()
-    // })
+    consoleHistory.innerHTML = ''
 }
 
 // override the default console.log() method
-// const console = { 
-//     log(val) {
-//         return eval(val)
-//     }
-// }
+const console = {
+    log(val) {
+        return eval(val)
+    }
+}
 
-// add the code inputed and its result to Console-history element 
-// as a new children element
 
-function addToHistory(code, output) {
-    let consoleOutput = document.createElement('div')
-    consoleOutput.classList.add('console-output')
-    consoleOutput.innerHTML = String(output)
 
-    if (output instanceof Error) { // to check if the output is from error catch
+
+
+/**
+ * Add the code inputted and its result to the console-history element as new child elements.
+ * 
+ * @param {string} code - The code inputted.
+ * @param {*} output - The output of the code execution.
+ * @returns {void}
+ */
+function appendToConsoleHistory(code, output) {
+    // Create a new div element for the console input
+    const consoleInput = createElement({
+        name: 'div', 
+        innerText: code, 
+        classList: 'console-input'
+    })
+
+    // Create a new div element for the console output
+    const consoleOutput = createElement({
+        name: 'div', 
+        classList: 'console-output', 
+        innerHTML : String(output)
+    })
+
+    // Add 'error' class to console output if output is an instance of Error
+    if (output instanceof Error) {
         consoleOutput.classList.add('error')
-    } else if (output == undefined || output == null) {
+    }
+    // Add 'undefined' class to console output if output is undefined or null
+    else if (output == undefined || output == null) {
         consoleOutput.classList.add('undefined')
     } 
-
-    let consoleInput = document.createElement('div')
-    consoleInput.classList.add('console-input')
-    consoleInput.innerText = code // using innertext to maintain the breaking line
+    
+    // Append console input and console output to console history element,
+    // excluding code 'clear()' which is meant to delete all history elements
     if (code != 'clear()') {
         consoleHistory.append(consoleInput, consoleOutput)
     }
-    // only append if code is not clear()
-    // if code is clear(), it will delete all history element
 }
 
 
@@ -532,24 +776,28 @@ function addToHistory(code, output) {
 //                resize consoleInput height              //
 // ====================================================== //
 
-window.onload = resize() // to maintain the height, 
+window.onload = resizeConsoleInputHeight() // to maintain the height, 
 // becase the textarea consoleInput value not lost after page load
 
-consoleInput.addEventListener('input', () => resize()) 
+consoleInput.addEventListener('input', () => resizeConsoleInputHeight()) 
+
+function resizeConsoleInputHeight() {
+    consoleInput.style.height = 'auto' // to reset the height 
+    consoleInput.style.height = consoleInput.scrollHeight + 'px' // then set again the height
+}
 
 
-// ======================================================================= //
-//          Combine all code inputed to string to be executed again        //
-// ======================================================================= //
 
-let codeHistory = '' // here i make a variable to store all inputed code
-// every new input will be combined to the old input
-// then all inputed code will executed together
-// by doing this, if we enter a new line of code, the value will be saved and can be used again
-// e.g:
-// 1st input => let a = 2  *it will declare variable 'a', the value can be used again in the next input
-// 2nd input => a + 2 * now, the old value of 'a' is 2, then sum old 'a' with '2', 'a' is now '4'
-// the 'a' value can be used again and again
+/**
+ * Combine all code inputted into a string to be executed again.
+ * 
+ * This variable stores all the entered code and combines it with previously entered code. 
+ * By doing this, all the entered code can be executed together and reused in subsequent inputs.
+ * 
+ * @type {string} codeHistory - A string that stores all the entered code.
+ */
+
+let codeHistory = '' 
 
 // ======================================================================= //
 
@@ -557,53 +805,52 @@ consoleInput.addEventListener('keydown', (e) => {
     if (e.key == 'Tab') {
         e.preventDefault() // by default tab key is for change elements focus
         
-        // to add indent if tab key pressed
-        caretPos = e.target.selectionStart // caret is the cursor/text pointer, it will return the index position of caret from the string
-        let val = consoleInput.value
+        // Adding indent when tab key is pressed
+        const consoleCaretPos = e.target.selectionStart // caret is the cursor/text pointer, it will return the index position of caret from the string
+        const val = consoleInput.value
 
-        consoleInput.value = // it will insert tab (space) into the caret position
-            val.substring(0, caretPos) 
-            + "    " +  // tab size = 4 space
-            val.substring(caretPos)  
-        consoleInput.setSelectionRange(caretPos + 4, caretPos + 4) // here caretPos + 4 (relative to tab size)
-        
+        consoleInput.value = 
+            val.substring(0, consoleCaretPos) 
+            + '    ' +  // tab size = 4 spaces
+            val.substring(consoleCaretPos)  
+        consoleInput.setSelectionRange(consoleCaretPos + 4, consoleCaretPos + 4) // here consoleCaretPos + 4 (relative to tab size)
     }
 
     if (!e.shiftKey && e.key == 'Enter') {   
-        e.preventDefault() // to prevent new line on Enter Key Pressed
+        e.preventDefault() // Prevents new line on Enter key pressed
+        const code = consoleInput.value
+        let output
 
-        if (!!consoleInput.value) { // if text area is not empty. then ...
-            let code = consoleInput.value
-            let output
+        if (code) { // If the text area is not empty, then ...
             try {
-                eval(codeHistory + '\n' + code) // here i try evaluate codeHistory + new code, 
-                // if the eval() generates error, the codes bellow will not executed, 
-                // the error message will be catched and asigned to output
-                if (code != 'clear()') codeHistory += '\n' + code // prevent clear() added to codehistory
-                // because, it will be executed every time, and console-history will always removed
-                output = eval(codeHistory) // if not error, output will have eval(codeHistory) return value
+                // Here, we try to evaluate codeHistory + new code.
+                // If the eval() generates an error, the new code will not be combined into codeHistory to prevent errors in the future.
+                eval(codeHistory + '\n' + code)
+                // Prevent clear() from being added to codeHistory,
+                // because it would be executed every time and console-history would always be cleared.
+                if (code !== 'clear()') codeHistory += '\n' + code
+                // Finally, if the above trial doesn't generate an error, output will have the value returned by eval(codeHistory).
+                output = eval(codeHistory)
             } catch (err) {
-                output = err // but if eval(codeHistory) return error, the error message will be asigned to ouput
+                // The error message will be displayed in the console.
+                output = err
             }
-    
-            addToHistory(code, output) // adding to console-history element
-            consoleInput.value = "" // to reset consoleInput
-    
-            // to automatic scroll down when press Enter and the height of console is over that the wrapper
-            // to make consoleInput.console-input always visible
-            let scrollHeight = consoleWrapper.scrollHeight + 2 // 2 is for the border width -> 1px top-bottom
-            let height = consoleWrapper.offsetHeight // get the height of the wrapper
-            consoleWrapper.scrollTo(0, (scrollHeight - height)) // to scroll down
-
-            // save the history to sessionStorage
-            saveHistory(code) 
+        
+            appendToConsoleHistory(code, output) // Add the code and its output to the console-history element.
+            consoleInput.value = '' // Reset the consoleInput.
+        
+            // Automatic scroll down when Enter is pressed and the height of console is greater than the wrapper
+            // to keep consoleInput always visible.
+            const scrollHeight = consoleWrapper.scrollHeight + 2 // 2 is for the border width (1px top-bottom).
+            const height = consoleWrapper.offsetHeight // Get the height of the wrapper.
+            consoleWrapper.scrollTo(0, (scrollHeight - height)) // Scroll down.
+        
+            // Save the history to sessionStorage.
+            saveHistory(code)
         }
-
-        logIndex = logHistory.length // to reset the logIndex if Enter pressed
-    } 
-    
-    if (e.key == "ArrowUp") getHistory('up', e.target.selectionStart)
-    if (e.key == "ArrowDown") getHistory('down', e.target.selectionStart)
+        
+        logIndex = logHistory.length // Reset the logIndex if Enter is pressed.
+    }
 })
 
 
@@ -615,33 +862,17 @@ consoleInput.addEventListener('keydown', (e) => {
 //        like the real browser console                   //
 // ====================================================== //
 
-const logHistory = sessionStorage.getItem('logHistory') != null ? // if logHistory exist in sessionStorage
-    JSON.parse(sessionStorage.getItem('logHistory')) // asign logHistory value
-    : [] // else, asign empty array
- 
-let logIndex = logHistory.length // used in getHostory()
+const logHistory = JSON.parse(sessionStorage.getItem('logHistory') || '[]')
+// The logHistory variable is used to store the console input history.
+// It retrieves the history from session storage and parses it into an array.
+// If no history is found in session storage, it assigns an empty array as the default value.
 
 
-let saveHistory = code => { // save the log history to sessionStorage
-    let logItem = sessionStorage.logHistory != null ? // if localHistory is exist
-        JSON.parse(sessionStorage.logHistory) // get the last saved loghistory
-        : [] // if not exist, asign empty arrau
-    
-    sessionStorage.logHistory == null ? // // if localHistory is not exist
-        logHistory.push(code) // push the code into logHistory Array 
-        : logItem.push(code) // else, push into logItem
-    
-    // either logItem or logHistory will be pushed (using setItem) into sessionStorage
-
-    sessionStorage.getItem('logHistory') == null ?
-        sessionStorage.setItem('logHistory', JSON.stringify(logHistory))
-        : sessionStorage.setItem('logHistory', JSON.stringify(logItem))
-    
-    // to update The Loghistory Array value
+const saveHistory = (code) => {
     logHistory.push(code)
+    sessionStorage.setItem('logHistory', JSON.stringify(logHistory))
 }
-
-
+  
 
 
 // ====================================================== //
@@ -649,22 +880,51 @@ let saveHistory = code => { // save the log history to sessionStorage
 //                by pressing arrowUp and Down            //
 // ====================================================== //
 
-let getHistory = (direction, caretPos) => { 
+let logIndex = logHistory.length - 1 
 
-    if (caretPos == consoleInput.value.length || caretPos == 0) { 
-        // to load hostory only if the caret position is at the end or the begining  of the textare
-        
+consoleInput.addEventListener('keydown', (e) => {
+    if (e.key == 'ArrowUp') getHistory('up', e.target.selectionStart, e)
+    if (e.key == 'ArrowDown') getHistory('down', e.target.selectionStart)
+})
+
+const getHistory = (direction, consoleCaretPos, e) => { 
+    const numLines = consoleInput.value.split('\n').length
+
+    if (consoleCaretPos == consoleInput.value.length || consoleCaretPos == 0) {
+        // Load history only if caret is at the begining or at the end of console input
         if (logHistory.length != 0) {
-            if (direction == "up") {
-                consoleInput.value = logIndex <= 0 ? // to prevent the log index have negative value
-                    logHistory[0] : logHistory[--logIndex] 
+            // To prevent result of undefined if loghistory length is 0
+            if (numLines <= 1) {
+                // If numLines only one or less
+                if (direction == 'up') {
+                    e.preventDefault()
+                    consoleInput.value = logIndex > 1
+                        ? logHistory[--logIndex]
+                        : logHistory[0]
+                } else {
+                    consoleInput.value = logIndex >= logHistory.length - 1
+                        ? logHistory[logHistory.length - 1]
+                        : logHistory[logIndex++]
+                }
             } else {
-                consoleInput.value = logIndex >= logHistory.length - 1 ?   // to prevent the log index have value more than log history length
-                logHistory[logHistory.length - 1] : logHistory[logIndex++]
+                // If numLines is more than 1 line
+                if (direction == 'up' && consoleCaretPos == 0) {
+                    // Only get history if direction is up with caret at the beginning
+                    consoleInput.value = logIndex <= 0
+                        ? logHistory[0]
+                        : logHistory[--logIndex] 
+                } else if (direction == 'down' && consoleCaretPos == consoleInput.value.length) {
+                    // only get history if direction down with caret at the end
+                    consoleInput.value = logIndex >= logHistory.length - 1
+                        ? logHistory[logHistory.length - 1]
+                        : logHistory[logIndex++]
+                }
+                // If neither condition is met, arrow up and down will perform the default behavior
             }
-        }
-
+        } 
     }
+    
+    resizeConsoleInputHeight()
 }
 
 
@@ -674,27 +934,41 @@ let getHistory = (direction, caretPos) => {
 
 const resizer = document.querySelector('.resizer')
 
-resizer.addEventListener('pointerdown', () => {
+function debounce(func, delay) {
+    let timeoutId // Stores the timeout ID for the delayed execution
+    return function (...args) {
+      clearTimeout(timeoutId) // Clear the previous timeout
+      // Set a new timeout to execute the function after the specified delay
+      timeoutId = setTimeout(() => {
+        func.apply(null, args) // Execute the function with the provided arguments
+      }, delay)
+    }
+}
+  
+resizer.addEventListener('pointerdown', (e) => {
     let mainWrapperHeight = document.querySelector('.main-wrapper').offsetHeight
-    consoleWrapper.style.maxHeight = mainWrapperHeight - 16 + 'px' // 16 from padding top code-wrapper
-
-    consoleWrapper.parentElement.addEventListener('pointermove', f = (e) => {
-        if (e.buttons == 1) {
+    consoleWrapper.style.maxHeight = mainWrapperHeight - 16 + 'px'
+    consoleHistory.classList.add('no-select')
+    const handlePointerMove = debounce((e) => {
+        
+        if (e.buttons === 1) {
             document.body.style.cursor = 'ns-resize'
             let availableSpace = e.clientY - (codeWrapper.offsetTop + container.offsetTop)
-            
+
             if (availableSpace > 0) {
                 let newConsoleHeight = mainWrapperHeight - availableSpace + 'px'
-                
+
                 consoleWrapper.style.height = 'auto'
                 consoleWrapper.style.height = newConsoleHeight
             }
-            
         } else {
+            consoleHistory.classList.remove('no-select')
             document.body.style.cursor = 'default'
-            consoleWrapper.parentElement.removeEventListener('pointermove', f)
+            consoleWrapper.parentElement.removeEventListener('pointermove', handlePointerMove)
         }
-    })    
+    }, 10)
+
+    consoleWrapper.parentElement.addEventListener('pointermove', handlePointerMove)
 })
 
 
@@ -703,32 +977,49 @@ resizer.addEventListener('pointerdown', () => {
 //    Feature : maximize and restore height of console    //
 // ====================================================== //
 
+const mainWrapper = document.querySelector('.main-wrapper')
 const maximizeBtn = document.querySelector('.maximize')
-maximizeBtn.setAttribute('title', "Maximize Console Height") 
+
+maximizeBtn.setAttribute('title', 'Maximize Console Height') 
 consoleWrapper.style.transition = 'all 0.2s'
 maximizeBtn.style.transition = 'all 0.2s'
-let heightBeforeMaximized // it will store old height to be restored if user click again on maximizebtn
 
-maximizeBtn.addEventListener('click', () => {
-    let mainWrapperHeight = document.querySelector('.main-wrapper').offsetHeight
+let heightBeforeMaximized // It will store old height to be restored if user clicks again on maximizebtn
 
-    if (maximizeBtn.classList.contains('true')) {
-        consoleWrapper.style.height = heightBeforeMaximized + 'px'
-        maximizeBtn.setAttribute('title', "Maximize Console Height")
-        maximizeBtn.style.transform = "rotate(0)"
-    } else {
-        heightBeforeMaximized = consoleWrapper.offsetHeight
-        consoleWrapper.style.maxHeight = mainWrapperHeight - 16 + 'px'
-        consoleWrapper.style.height = mainWrapperHeight - 16 + 'px'
-        maximizeBtn.setAttribute('title', "Restore Console Height")
-        maximizeBtn.style.transform = "rotate(180deg)"
-    }
+maximizeBtn.addEventListener('click', toggleConsoleMaximized)
 
+function maximizeConsoleHeight() {
+    let mainWrapperHeight = mainWrapper.offsetHeight
+
+    consoleWrapper.style.maxHeight = mainWrapperHeight - 16 + 'px'
+    consoleWrapper.style.height = mainWrapperHeight - 16 + 'px'
+    maximizeBtn.style.transform = 'rotate(180deg)'
+    maximizeBtn.setAttribute('title', 'Restore Console Height')
+}
+
+function restoreConsoleHeight() {
+    consoleWrapper.style.height = heightBeforeMaximized + 'px'
+    maximizeBtn.style.transform = 'rotate(0)'
+    maximizeBtn.setAttribute('title', 'Maximize Console Height')
+}
+
+function toggleConsoleMaximized() {
     maximizeBtn.classList.toggle('true')
-    // Note : 
-    // this callback will change style element 
-    // without add any class on CSS-- direcly from JS
-    // coz, i was lazy to add new stylesheet
+    
+    if (maximizeBtn.classList.contains('true')) {
+        heightBeforeMaximized = consoleWrapper.offsetHeight
+        maximizeConsoleHeight()
+    } else {
+        restoreConsoleHeight()  
+    }
+}
+
+// If resize event occurs and console is maximized, 
+// then set again the console height by call maximizeConsoleHeight()
+window.addEventListener('resize', () => {
+    if (maximizeBtn.classList.contains('true')) {
+      maximizeConsoleHeight()
+    }
 })
 
 
@@ -738,37 +1029,42 @@ maximizeBtn.addEventListener('click', () => {
 // ====================================================== //
 
 const closeConsoleBtn = document.querySelector('.close-console')
-closeConsoleBtn.setAttribute('title', "Close Console") 
-let codeInfo = document.querySelector('.code-info')
-let heightBeforeClosed
+closeConsoleBtn.setAttribute('title', 'Close Console') 
 
-let openConsoleBtn = document.createElement('div')
-    openConsoleBtn.classList.add('code-info-item', 'open-console-btn')
-    openConsoleBtn.title = "Open Console (Alt + C)"
-    openConsoleBtn.innerHTML = "<u>C</u>onsole"
-    openConsoleBtn.style.opacity = 0
-    codeInfo.prepend(openConsoleBtn)
-    
+let heightBeforeClosed
+let openConsoleBtn
+  
 closeConsoleBtn.addEventListener('click', () => {
-    openConsoleBtn = document.querySelector('.open-console-btn')
     heightBeforeClosed = consoleWrapper.offsetHeight
     consoleWrapper.style.height = 0 + 'px'
-    openConsoleBtn.style.opacity = 1
+    createOpenConsoleBtn()
 })
 
-openConsoleBtn.addEventListener('click', openConsole)
+const createOpenConsoleBtn = () => {
+    openConsoleBtn = createElement({
+        name: 'div', 
+        classList: ['code-info-item', 'open-console-btn'], 
+        title: 'Open Console (Alt + C)', 
+        innerHTML: '<u>C</u>onsole', 
+        action: {
+            type: 'prepend', 
+            target: '.code-info'
+        },
+        eventListener: {
+            eventName: 'click', 
+            callback: () => openConsole() 
+        }
+    })
+}
 
+const openConsole = () => {
+    if (openConsoleBtn) openConsoleBtn.remove() 
+    consoleWrapper.style.height = heightBeforeClosed + 'px'   
+}
 
-// ====================================================== //
-//       Feature : Open Console Shortcut (Alt + C)        //
-// ====================================================== //
-
+// Feature : Open Console Shortcut (Alt + C)
 document.body.addEventListener('keydown', e => {
-    if (openConsoleBtn.style.opacity == 1) {
-        // only executed if openConsoleBtn is visible 
-        // to prevent error on maximizeBtn click event
-        if (e.altKey && e.key == 'c') openConsole()
-    }
+    if (e.altKey && e.key == 'c') openConsole()
 })
 
 
@@ -781,26 +1077,3 @@ document.body.addEventListener('keydown', e => {
 
 
 //  1 : highlighter
-
-
-
-
-
-
-// ====================================================== //
-//                  Unecesarry Code                       //
-// ====================================================== //
-
-
-
-// window.onload = setWidthHighlighter()
-// window.addEventListener('resize', ()=> setWidthHighlighter())
-
-// function setWidthHighlighter() {
-//     let codeInputWidth = codeInput.offsetWidth
-//     let lineHighlighter = document.querySelector('.line-numbers span.highlighted')
-//     let _after = window.getComputedStyle(lineHighlighter, "::after")
-
-//     lineHighlighter.style.setProperty('--width', 'auto')
-//     lineHighlighter.style.setProperty('--width', codeInputWidth + 'px' )
-// }
