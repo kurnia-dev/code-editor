@@ -16,6 +16,8 @@
 body {
   font-size: 10px;
   font-family: monospace;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .code-editor-container {
@@ -45,6 +47,7 @@ body {
   font-size: 14px;
   line-height: 16px;
   cursor: pointer;
+  opacity: 0.6;
 }
 
 .files .file .close {
@@ -76,6 +79,7 @@ body {
 
 .files .file.active {
   background: #212836;
+  opacity: 1;
 }
 
 .files .file:hover {
@@ -93,13 +97,12 @@ body {
   display: flex;
   flex-direction: row;
   padding-top: var(--code-editor-padding);
-  /* padding-bottom: 0;
-  padding-right: 0; */
-  /* gap: 24px; */
   background: #212836;
   position: relative;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
   flex-grow: 1;
+  transition: 0.3s;
 }
 
 .code-wrapper .line-numbers {
@@ -126,7 +129,7 @@ body {
   color: #8292a9;
 }
 
-/* .code-wrapper .line-numbers span.highlighted::after {
+.code-wrapper .line-numbers span.highlighted::after {
   content: "";
   display: inline;
   position: absolute;
@@ -136,7 +139,15 @@ body {
   z-index: 0;
   background: #8292a9;
   background: #79a4e31f;
-} */
+}
+
+.code-input-wrapper {
+  display: flex;
+  flex-grow: 1;
+  width: 100%;
+  overflow-y: hidden;
+  overflow-x: auto;
+}
 
 #codeinput {
   width: max-content;
@@ -153,10 +164,12 @@ body {
   /* height: max-content; */
   word-wrap: unset;
   overflow: hidden;
-  display: block;
+  display: inline-block;
+  -webkit-user-select: text;
+  user-select: text;
 }
 
-#codeinput code {
+#codeinput div {
   cursor: text;
   outline: none;
   border: none;
@@ -205,7 +218,8 @@ body {
   background: #303c5429;
 }
 
-#codeinput::-webkit-scrollbar {
+#codeinput::-webkit-scrollbar,
+.code-input-wrapper::-webkit-scrollbar {
   width: 16px;
   background: transparent;
 }
@@ -216,17 +230,20 @@ body {
   background: transparent;
 }
 #codeinput::-webkit-scrollbar-thumb,
-.code-wrapper::-webkit-scrollbar-thumb {
+.code-wrapper::-webkit-scrollbar-thumb,
+.code-input-wrapper::-webkit-scrollbar-thumb {
   background: #5c678278;
 }
 
 .code-wrapper::-webkit-scrollbar-thumb:active,
-.code-wrapper::-webkit-scrollbar-thumb:hover {
+.code-wrapper::-webkit-scrollbar-thumb:hover,
+.code-input-wrapper::-webkit-scrollbar-thumb:active,
+.code-input-wrapper::-webkit-scrollbar-thumb:hover {
   background: #5c6782c5;
 }
 
 .code-wrapper::-webkit-scrollbar-corner {
-  background: none;
+  display: none;
   border-left: 1px solid #303c54;
 }
 
@@ -478,4 +495,9 @@ textarea.console-input {
   height: 20px;
   width: 20px;
   margin-top: 6px;
+}
+
+.console-history {
+  -webkit-user-select: text;
+  user-select: text;
 }

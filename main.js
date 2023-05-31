@@ -185,13 +185,14 @@ codeInput.addEventListener('pointerup', () => {
  * The number of lines of code in the code input of the code editor.
  * @type {number}
  */
-let linesCount = codeInput.childElementCount
+let linesCount = codeInput.childNodes.length + 1
+console.log(linesCount);
 
 // ====================================================== //
 //                CODE EDITOR FUNCTIONS                   //
 // ====================================================== //
 
-document.body.onload = setHeightCodeInput()
+// document.body.onload = // setHeightCodeInput()
 
 /**
  * Sets the caret position within the code editor based on the type of event.
@@ -246,10 +247,15 @@ function addNewLineNumber(linesCount) {
     })
 }
 
-
 function deleteLastLine() {
     if (lineNumbersContainer.childElementCount > 1) 
         lineNumbersContainer.lastElementChild.remove()
+}
+
+function updateLineNumber() {
+    lineNumbersContainer.innerHTML = ''
+    linesCount = codeInput.childNodes.length || 1
+    for (let num = 1; num <= linesCount; num++) addNewLineNumber(num)
 }
 
 /**
@@ -281,7 +287,7 @@ function insertNewLineCode(e, text = null) {
         
     linesCount++
     addNewLineNumber(linesCount)
-    setHeightCodeInput(linesCount)
+    // setHeightCodeInput(linesCount)
 }
 
 /**
@@ -336,7 +342,7 @@ function createCopySelectionButton() {
         title: 'Copy', 
         action: {
             type: 'append',
-            target: 'code.highlighted'
+            target: codeInput
         } 
     })
 
@@ -345,19 +351,19 @@ function createCopySelectionButton() {
         deleteCopyButton() // Called if user click outside the copy button
     }, { once: true })
     
-    const copySelection = () => {
-        const selectedText = window.getSelection().toString()
-        navigator.clipboard.writeText(selectedText)
-        deleteCopyButton()
-    }
     
-    const deleteCopyButton = () => {
-        const copyBtn = document.querySelector('.copy-btn-popup')
-        if (copyBtn) copyBtn.remove()
-        window.getSelection().removeAllRanges()
-    }
+}
+const copySelection = () => {
+    const selectedText = window.getSelection().toString()
+    navigator.clipboard.writeText(selectedText)
+    deleteCopyButton()
 }
 
+const deleteCopyButton = () => {
+    const copyBtn = document.querySelector('.copy-btn-popup')
+    if (copyBtn) copyBtn.remove()
+    window.getSelection().removeAllRanges()
+}
 
 
 /**
@@ -371,8 +377,7 @@ function createCopySelectionButton() {
 */
 function setHeightCodeInput(linesCount) {
     const scrollPos = document.querySelector('.code-wrapper').scrollTop
-    const lineElement = document.querySelector('#codeinput code')
-    const lineHeight = lineElement.offsetHeight
+    const lineHeight = getComputedStyle(codeInput).lineHeight.replace(/[^0-9]/g,'') // get number from string -> remove the 'px'
     const totalLineHeight = linesCount * lineHeight
     const codeWrapperHeight = codeWrapper.offsetHeight
     
@@ -439,6 +444,14 @@ function setLineHightligher() {
 //              CODE EDITOR EVENT LISTENER                //
 // ====================================================== //
 
+// if (!codeInput.childElementCount) {
+//     console.log(true)
+//     let newDiv = createElement({ name: 'div', innerHTML: '<br/>', action: { type: 'append', target: codeInput } })
+//     setEditableStatus(true, newDiv)
+//     newDiv.focus()
+// }
+
+// console.log(codeInput.childElementCount);
 
 /**
  * Event listener for the 'keydown' event on the codeInput element.
@@ -448,9 +461,11 @@ function setLineHightligher() {
  */
 codeInput.addEventListener('keydown', (e) => {
 
+    
     if (e.key == 'Enter') {
-        e.preventDefault()
-        insertNewLineCode(e)
+        // e.preventDefault()
+        // insertNewLineCode(e)
+        addNewLineNumber(++linesCount)
     }
 
     
@@ -471,69 +486,25 @@ codeInput.addEventListener('keydown', (e) => {
 
     if (e.key == 'Backspace') {
         if (window.getSelection().type == 'Caret' && caretPos == 0) {
-            if (!codeInput.isContentEditable) {
-                const prevEl = e.target.previousElementSibling
-
-                if (prevEl) {
-                    e.preventDefault()
-        
-                    const prevElTextLength = prevEl.innerText.length
-                    const textAfterCaret = e.target.innerHTML
-        
-                    prevEl.focus()
-                    prevEl.innerText += textAfterCaret
-            
-                    if (prevElTextLength) {
-                        const selection = window.getSelection()
-                        selection.setPosition(prevEl.firstChild, prevElTextLength)
-                    }
-                        
-                    e.target.remove()
-                }
-            }
+            deleteLastLine()
+            if (linesCount > 1) linesCount--
         }
-        
 
-        if (window.getSelection().type == 'Range') {
-            if (codeInput.isContentEditable) {
-                linesCount = 1
-                lineNumbersContainer.innerHTML = ''
-                codeInput.innerHTML = ''
-                setEditableStatus(false, codeInput)
-                
-                createElement({
-                    name: 'code', 
-                    classList: 'highlighted', 
-                    innerText: '',
-                    attribute: {
-                        contenteditable: true, 
-                        tabindex: 0
-                    }, 
-                    action: {
-                        type: 'append', 
-                        target: '#codeinput'
-                    }
-                })
-                    
-                codeInput.firstElementChild.focus()
-                addNewLineNumber(linesCount)
-                setHeightCodeInput(linesCount)
-                setLineHightligher()
-                updateLineColInfo()
-            }
-        }
+
+        codeInput.addEventListener('keyup', updateLineNumber)
     }
 
 
-    if (codeInput.childElementCount < linesCount) {
-        linesCount--
-        setHeightCodeInput(linesCount)
-        deleteLastLine()
-    }
+
+    // if (codeInput.childElementCount < linesCount) {
+    //     linesCount--
+    //     // setHeightCodeInput(linesCount)
+    //     deleteLastLine()
+    // }
 
     if (e.ctrlKey && e.key == 'a') {
-        setEditableStatus(true, codeInput)
-        createCopySelectionButton()
+        // setEditableStatus(true, codeInput)
+        // createCopySelectionButton()
     }
 
     if (e.ctrlKey && e.key == 'c') {
@@ -555,6 +526,7 @@ codeInput.addEventListener('keydown', (e) => {
 
     if (key.includes(e.keyCode)) {
         // Trigger the setLineHightligher() function to highlight the line that is focused after one of the specified keys is pressed.
+        setHeightCodeInput(linesCount)
         setLineHightligher()
     }
 
@@ -569,7 +541,7 @@ const fullscreenToggleBtn = document.querySelector('.fullscreenToggle')
 fullscreenToggleBtn.addEventListener('click', () => {
     fullscreenToggleBtn.classList.toggle('active')
     container.classList.toggle('fullscreen')
-    setHeightCodeInput(linesCount)
+    // setHeightCodeInput(linesCount)
 })
 
 
@@ -608,7 +580,7 @@ function onPointerUp() {
         if (!copyBtn) createCopySelectionButton()
     }
 
-    setEditableStatus(false, codeInput)
+    // setEditableStatus(false, codeInput)
 
     codeInput.removeEventListener('pointermove', onPointerMove)
     codeInput.removeEventListener('pointerup', onPointerUp)
@@ -720,12 +692,12 @@ function clear() {
     consoleHistory.innerHTML = ''
 }
 
-// override the default console.log() method
-const console = {
-    log(val) {
-        return eval(val)
-    }
-}
+// // override the default console.log() method
+// const console = {
+//     log(val) {
+//         return eval(val)
+//     }
+// }
 
 
 
@@ -1070,6 +1042,38 @@ document.body.addEventListener('keydown', e => {
 
 
 
+
+            // const selectedText = window.getSelection()
+            // // // linesCount = 1
+            // // // lineNumbersContainer.innerHTML = ''
+            // // // codeInput.innerHTML = ''
+            
+            // // const baseNode = selectedText.baseNode
+            // // const extendNode = selectedText.extendNode
+            // // extendNode.parentElement.focus()
+            // // // baseNode.remove()
+            // // // baseNode.remove()
+            // // // createElement({
+            //     // //     name: 'code', 
+            // // //     classList: 'highlighted', 
+            // // //     innerText: '',
+            // // //     attribute: {
+            // // //         contenteditable: true, 
+            // // //         tabindex: 0
+            // // //     }, 
+            // // //     action: {
+            // // //         type: 'append', 
+            // // //         target: '#codeinput'
+            // // //     }
+            // // // })
+            
+            // // // codeInput.firstElementChild.focus()
+            // linesCount = codeInput.childElementCount
+            // // addNewLineNumber(linesCount)
+
+            // // setHeightCodeInput(linesCount)
+            // setLineHightligher()
+            // updateLineColInfo()
 
 // ====================================================== //
 //                      To do list                        //
