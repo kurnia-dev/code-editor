@@ -2,10 +2,8 @@ const container = document.querySelector('.code-editor-container')
 const codeWrapper = document.querySelector('.code-wrapper')
 const codeInput = document.querySelector('#codeinput')
 const lineNumbersContainer = document.querySelector('.line-numbers')
-const lineHeight = getComputedStyle(codeInput).lineHeight.replace(
-    /[^0-9]/g,
-    ''
-) // get number from string -> remove the 'px'
+const lineHeight = getComputedStyle(codeInput).lineHeight.replace(/[^0-9]/g,'') // get number from string -> remove the 'px'
+const tabSize = 4
 
 // Varible for console start here //
 const consoleWrapper = document.querySelector('.console-wrapper')
@@ -367,7 +365,6 @@ function createCopySelectionButton() {
 }
 
 const copySelection = () => {
-    console.log('copied')
     const selectedText = window.getSelection().toString()
     navigator.clipboard.writeText(selectedText)
     deleteCopyButton()
@@ -503,6 +500,80 @@ function setWidthHighlighter() {
 window.addEventListener('load', setWidthHighlighter)
 window.addEventListener('resize', setWidthHighlighter)
 
+
+/**
+ * Indentation System
+ * 
+ * - Adding indentation when the Tab key is pressed
+ * - The tab size default is 4 spaces
+ * 
+ * Algorithm: 
+ * - If the Tab key is pressed, calculate the remaining spaces for indentation 
+ *   by substracting the tab size with the modulus of caretPos by tab size
+ * - Insert the remaining spaces using document.execCommand('insertHTML')
+ * - Set the caret position using selection.setPosition to caretPos + remaining spaces
+ * 
+ * Note : 
+ * - caretPos is where the index of caret in a line starting from 0
+ *  
+ * Why use 4 spaces instead of '\t' tab character?
+ * - To ensure correct Line Col info display.
+ * - Using the tab character will always count as 1 column/character.
+ */
+function insertIndent() {
+    const selection = window.getSelection()
+    const node = selection.focusNode
+    caretPos = selection.focusOffset
+
+    const remainingSpaces = tabSize - (caretPos % tabSize)
+
+    if (document.execCommand) {
+        document.execCommand('insertHTML', false, ' '.repeat(remainingSpaces))
+    } else {
+        if (node instanceof Text) {
+            node.textContent =
+                node.textContent.substring(0, caretPos)
+                + ' '.repeat(remainingSpaces)
+                + node.textContent.substring(caretPos)
+
+            selection.setPosition(node, caretPos + remainingSpaces)
+        } else {
+            node.textContent = ' '.repeat(remainingSpaces)
+            selection.setPosition(node.firstChild, caretPos + remainingSpaces)
+        }
+    }
+
+    caretPos += remainingSpaces
+    updateLineColInfo(caretPos)
+}
+
+/**
+ * Delete Indentation
+ *
+ * Algoritm: 
+ * - Get the Node and its textContent.
+ * - Check if the caret is at an indentation break point by checking if caretPos modulus tabSize is equal to 0.
+ * - If it is, check if the last {tabSize} character is spaces (as much as tabSize)
+ * - If they are, prevent the default behavior, remove those spaces, and update the Node's textContent.
+ * - Set the caret position to minus tabSize.
+ *
+ * @param {Event} e - The Backspace key event.
+ */
+function deleteIndent(e) {
+    const selection = window.getSelection()
+    const node = selection.focusNode
+    const textContent = node.textContent
+
+    if (caretPos % tabSize === 0 && textContent.substring(caretPos - tabSize) === ' '.repeat(tabSize)) {
+        e.preventDefault()
+        node.textContent = textContent.slice(0, caretPos - tabSize) + textContent.slice(caretPos)
+        selection.setPosition(node, caretPos - tabSize)
+        caretPos -= tabSize
+    }
+    
+    updateLineColInfo()
+}
+
 // ====================================================== //
 //              CODE EDITOR EVENT LISTENER                //
 // ====================================================== //
@@ -521,7 +592,12 @@ codeInput.addEventListener('keydown', (e) => {
     }
 
     if (e.shiftKey && e.key == 'Enter') {
-        e.preventDefault()
+        e.preventDefault() // Have to prevents, because inserting <br/> tag, that causes bug
+    }
+
+    if (e.key == 'Tab') {
+        e.preventDefault() // by default tab key is for change elements focus
+        insertIndent()
     }
 
     if (e.key == 'ArrowDown' || e.key == 'ArrowUp') {
@@ -531,10 +607,14 @@ codeInput.addEventListener('keydown', (e) => {
     }
 
     if (e.key == 'Backspace') {
-        if (window.getSelection().type == 'Caret' && caretPos == 0) {
-            deleteLastLine()
-            if (linesCount > 1) linesCount--
-            setLineHightligher('up')
+        if (window.getSelection().type == 'Caret') {
+            if (caretPos == 0) {
+                deleteLastLine()
+                if (linesCount > 1) linesCount--
+                setLineHightligher('up')
+            } else {
+                deleteIndent(e)
+            }
         }
 
         if (window.getSelection().type === 'Range') {
@@ -1023,7 +1103,8 @@ const openConsole = () => {
 
 // Feature : Open Console Shortcut (Alt + C)
 document.body.addEventListener('keydown', (e) => {
-    if (e.altKey && e.key == 'c') openConsole()
+    if (document.querySelector('.open-console-btn'))
+        if (e.altKey && e.key == 'c') openConsole()
 })
 
 
@@ -1069,7 +1150,7 @@ function scrolling(e) {
         const maxScroll = scrollElementWidth - codeInputWrapper.offsetWidth
         const scrollPosition = scrollPercentage * maxScroll // Calculate the scroll position based on the scroll percentage
         codeInputWrapper.scrollLeft = scrollPosition
-        
+
         if (thumbOffsetLeft + scrollDistance < 0) {
             // Prevent the scroll thumb from having a left offset less than 0, which would make it invisible
             scrollbarThumb.style.left = 0
@@ -1087,15 +1168,15 @@ function scrolling(e) {
 
 // Display scrollbar only if element overflowed
 codeInput.addEventListener('keydown', debounce(() => {
-        if (codeInputWrapper.isOverflowed()) {
-            scrollbar.style.visibility = 'visible'
-        } else {
-            scrollbar.style.visibility = 'hidden'
-        }
-    
-        updateScrollbar()
-        updateThumbPos()
-    }, 10)
+    if (codeInputWrapper.isOverflowed()) {
+        scrollbar.style.visibility = 'visible'
+    } else {
+        scrollbar.style.visibility = 'hidden'
+    }
+
+    updateScrollbar()
+    updateThumbPos()
+}, 10)
 )
 
 /**
@@ -1103,7 +1184,7 @@ codeInput.addEventListener('keydown', debounce(() => {
  * @returns {boolean} True if the element is overflowed horizontally or vertically, false otherwise.
  * @this {HTMLElement} The element to check for overflow.
  */
-HTMLElement.prototype.isOverflowed =  function isOverflowed() {
+HTMLElement.prototype.isOverflowed = function isOverflowed() {
     return this.scrollWidth > this.clientWidth || this.scrollHeight > this.clientHeight
 }
 
