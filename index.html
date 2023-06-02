@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Code Editor</title>
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -22,46 +22,60 @@
           <div class="line-numbers">
             <span class="highlighted">1</span>
           </div>
-          <div name="code input" id="codeinput" spellcheck="false" contenteditable="true"></div>
+          <div class="code-input-wrapper">
+            <div
+              name="code input"
+              id="codeinput"
+              spellcheck="false"
+              contenteditable="true"
+            ></div>
+          </div>
         </div>
 
         <!-- Console ==> https://github.com/kurnia-dev/javascript-console/ -->
 
-        <div class="console-wrapper">
-          <div class="resizer"></div>
-          <div class="menu-bar">
-            <span class="title">Console</span>
-            <div class="menu-bar-buttons">
-              <span class="maximize"></span>
-              <span class="close-console"></span>
-            </div>
+        <div class="bottom-panel">
+          <div class="scrollbar">
+            <div class="scrollbar-thumb"></div>
           </div>
-          <div class="console-history">
-            <div class="console-input">console.log("Message: " + message)</div>
-            <div class="console-output">
-              Message: Type `info` to show instruction!
+          <div class="console-wrapper">
+            <div class="resizer"></div>
+            <div class="menu-bar">
+              <span class="title">Console</span>
+              <div class="menu-bar-buttons">
+                <span class="maximize"></span>
+                <span class="close-console"></span>
+              </div>
             </div>
-          </div>
-          <div class="input-wrapper">
-            <textarea
-              spellcheck="false"
-              type="text"
-              class="console-input"
-              title="console input"
-              rows="1"
-              id="console-input"
-            ></textarea>
+            <div class="console-history">
+              <div class="console-input">
+                console.log("Message: " + message)
+              </div>
+              <div class="console-output">
+                Message: Type `info` to show instruction!
+              </div>
+            </div>
+            <div class="input-wrapper">
+              <textarea
+                spellcheck="false"
+                type="text"
+                class="console-input"
+                title="console input"
+                rows="1"
+                id="console-input"
+              ></textarea>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="code-info">
-        <div class="code-info-item lineColInfo" title="Tab Indent">
-          Ln 1, Col 1
+        <div class="code-info">
+          <div class="code-info-item lineColInfo" title="Tab Indent">
+            Ln 1, Col 1
+          </div>
+          <div class="code-info-item spaces" title="Tab Indent">Spaces: 4</div>
+          <div class="code-info-item encoding" title="Encoding">UTF-8</div>
+          <div class="code-info-item lang" title="Language">JavaScript</div>
         </div>
-        <div class="code-info-item spaces" title="Tab Indent">Spaces: 4</div>
-        <div class="code-info-item encoding" title="Encoding">UTF-8</div>
-        <div class="code-info-item lang" title="Language">JavaScript</div>
       </div>
     </div>
     <script src="syntax-hightlighter.js"></script>
