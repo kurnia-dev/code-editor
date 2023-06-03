@@ -99,6 +99,7 @@ body {
   background: #212836;
   position: relative;
   overflow: scroll;
+  overflow-x: hidden;
   flex-grow: 1;
   transition: 0.3s;
   padding-bottom: 21px;
